@@ -1,6 +1,5 @@
 import React from 'react';
 import { Document, Row, Column, Heading, Paragraph } from '@unlayer/react-elements';
-import { lightTheme } from '../../theme';
 import {
   Hero,
   Section,
@@ -13,23 +12,20 @@ import {
   References,
   Footer,
 } from '../../components';
+import type { Theme } from '../../theme';
 import type { ExecutiveReportData } from '../../data/types';
+import type { SectionStyles } from '../../hooks/useDocumentState';
 
 interface ExecutiveReportProps {
   data: ExecutiveReportData;
+  sectionStyles: SectionStyles;
+  theme: Theme;
 }
 
 /**
  * Executive Report Template
- *
- * Sections: Cover → Executive Summary → KPIs → Highlights →
- * Timeline → Findings → Recommendations → Appendix → Footer
- *
- * All layout and rendering uses Unlayer Elements components.
  */
-export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data }) => {
-  const theme = lightTheme;
-
+export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data, sectionStyles, theme }) => {
   return (
     <Document>
       {/* Cover Page */}
@@ -44,26 +40,28 @@ export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data }) => {
       />
 
       {/* Executive Summary */}
-      <Section title="Executive Summary" sectionNumber="1" theme={theme}>
+      <Section id="summary" title="Executive Summary" sectionNumber="1" theme={theme} styleOverrides={sectionStyles['summary']}>
         <ContentBlock theme={theme}>{data.executiveSummary}</ContentBlock>
       </Section>
 
       <SectionDivider theme={theme} />
 
       {/* Key Performance Indicators */}
-      <Section title="Key Performance Indicators" sectionNumber="2" theme={theme}>
-        <MetricCardGrid
-          metrics={data.metrics.map((m) => ({ ...m, theme }))}
-          theme={theme}
-        />
+      <Section id="metrics" title="Key Performance Indicators" sectionNumber="2" theme={theme} styleOverrides={sectionStyles['metrics']}>
+        {data.metrics && (
+          <MetricCardGrid
+            metrics={data.metrics.map((m) => ({ ...m, theme }))}
+            theme={theme}
+          />
+        )}
       </Section>
 
       <SectionDivider theme={theme} />
 
       {/* Highlights */}
-      <Section title="Highlights" sectionNumber="3" theme={theme}>
-        {data.highlights.map((highlight, index) => (
-          <Row key={index} backgroundColor={theme.colors.background} padding="4px 0">
+      <Section id="highlights" title="Highlights" sectionNumber="3" theme={theme} styleOverrides={sectionStyles['highlights']}>
+        {data.highlights?.map((highlight, index) => (
+          <Row key={index} backgroundColor={sectionStyles['highlights']?.backgroundColor || theme.colors.background} padding="4px 0">
             <Column>
               <Paragraph
                 fontSize={theme.typography.fontSize.base}
@@ -79,15 +77,15 @@ export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data }) => {
       <SectionDivider theme={theme} />
 
       {/* Timeline */}
-      <Section title="Timeline" sectionNumber="4" theme={theme}>
-        <Timeline items={data.timeline} theme={theme} />
+      <Section id="timeline" title="Timeline" sectionNumber="4" theme={theme} styleOverrides={sectionStyles['timeline']}>
+        {data.timeline && <Timeline items={data.timeline} theme={theme} />}
       </Section>
 
       <SectionDivider theme={theme} />
 
       {/* Key Findings */}
-      <Section title="Key Findings" sectionNumber="5" theme={theme}>
-        {data.findings.map((finding, index) => (
+      <Section id="findings" title="Key Findings" sectionNumber="5" theme={theme} styleOverrides={sectionStyles['findings']}>
+        {data.findings?.map((finding, index) => (
           <Callout
             key={index}
             type="info"
@@ -102,8 +100,8 @@ export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data }) => {
       <SectionDivider theme={theme} />
 
       {/* Recommendations */}
-      <Section title="Recommendations" sectionNumber="6" theme={theme}>
-        {data.recommendations.map((rec, index) => (
+      <Section id="recommendations" title="Recommendations" sectionNumber="6" theme={theme} styleOverrides={sectionStyles['recommendations']}>
+        {data.recommendations?.map((rec, index) => (
           <RecommendationCard
             key={index}
             title={rec.title}
@@ -118,10 +116,10 @@ export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data }) => {
       <SectionDivider theme={theme} />
 
       {/* Appendix */}
-      <Section title="Appendix" sectionNumber="7" theme={theme}>
-        {data.appendix.map((item, index) => (
+      <Section id="appendix" title="Appendix" sectionNumber="7" theme={theme} styleOverrides={sectionStyles['appendix']}>
+        {data.appendix?.map((item, index) => (
           <React.Fragment key={index}>
-            <Row backgroundColor={theme.colors.background} padding="8px 0 4px 0">
+            <Row backgroundColor={sectionStyles['appendix']?.backgroundColor || theme.colors.background} padding="8px 0 4px 0">
               <Column>
                 <Heading
                   headingType="h4"
@@ -138,9 +136,11 @@ export const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ data }) => {
       </Section>
 
       {/* References */}
-      <Section title="References" theme={theme}>
-        <References items={data.references} theme={theme} />
-      </Section>
+      {data.references && (
+        <Section id="references" title="References" theme={theme} styleOverrides={sectionStyles['references']}>
+          <References items={data.references} theme={theme} />
+        </Section>
+      )}
 
       {/* Footer */}
       <Footer text={data.footerText} theme={theme} />

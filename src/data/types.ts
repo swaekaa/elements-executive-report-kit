@@ -130,3 +130,76 @@ export interface ResearchReportData {
   references: ReferenceItem[];
   footerText: string;
 }
+
+/* ── Incident Report Types ── */
+
+export interface IncidentReportData {
+  organization: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  author: string;
+  version: string;
+  incidentSummary: string;
+  impactMetrics: MetricData[];
+  timeline: TimelineItem[];
+  rootCauseAnalysis: string;
+  remediationSteps: string[];
+  preventativeMeasures: RecommendationData[];
+  appendix?: AppendixItem[];
+  footerText: string;
+}
+
+/* ── Business Review Types ── */
+
+export interface BusinessReviewData {
+  organization: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  author: string;
+  version: string;
+  executiveSummary: string;
+  kpis: MetricData[];
+  financialHighlights: string[];
+  operationalUpdates: string[];
+  strategicInitiatives: string[];
+  risksAndChallenges: FindingData[];
+  nextSteps: string[];
+  footerText: string;
+}
+
+/* ── Investor Update Types ── */
+
+export interface InvestorUpdateData {
+  organization: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  author: string;
+  version: string;
+  ceoMessage: string;
+  financialMetrics: MetricData[];
+  growthChart: ChartBarData[];
+  productMilestones: TimelineItem[];
+  marketPosition: string;
+  fundraisingStatus?: string;
+  footerText: string;
+}
+
+/* ── Compliance Report Types ── */
+
+export interface ComplianceReportData {
+  organization: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  author: string;
+  version: string;
+  auditScope: string;
+  complianceStatus: ComplianceItem[];
+  controlDeficiencies: FindingData[];
+  remediationPlan: RecommendationData[];
+  auditorNotes: string;
+  footerText: string;
+}

@@ -51,3 +51,9 @@ export type { ProgressBarProps } from './ProgressBar';
 
 export { ContentBlock } from './ContentBlock';
 export type { ContentBlockProps } from './ContentBlock';
+
+export { SummaryCard } from './SummaryCard';
+export type { SummaryCardProps } from './SummaryCard';
+
+export { InfoGrid } from './InfoGrid';
+export type { InfoGridProps } from './InfoGrid';

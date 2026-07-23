@@ -3,11 +3,17 @@ import { Row, Column, Heading, Paragraph } from '@unlayer/react-elements';
 import type { Theme } from '../theme';
 
 export interface SectionProps {
+  id?: string;
   title: string;
   subtitle?: string;
   sectionNumber?: string;
   children: React.ReactNode;
   theme: Theme;
+  styleOverrides?: {
+    backgroundColor?: string;
+    padding?: string;
+    textAlign?: 'left' | 'center' | 'right';
+  };
 }
 
 /**
@@ -20,19 +26,24 @@ export const Section: React.FC<SectionProps> = ({
   sectionNumber,
   children,
   theme,
+  styleOverrides = {},
 }) => {
   const t = theme;
   const displayTitle = sectionNumber ? `${sectionNumber}. ${title}` : title;
 
+  const bgColor = styleOverrides.backgroundColor || t.colors.background;
+  const padding = styleOverrides.padding || `${t.spacing.section} 0 ${t.spacing.md} 0`;
+  const align = styleOverrides.textAlign || 'left';
+
   return (
     <>
-      <Row backgroundColor={t.colors.background} padding={`${t.spacing.section} 0 ${t.spacing.md} 0`}>
+      <Row backgroundColor={bgColor} padding={padding}>
         <Column>
           <Heading
             headingType="h2"
             fontSize={t.typography.fontSize['2xl']}
             color={t.colors.textPrimary}
-            textAlign="left"
+            textAlign={align}
           >
             {displayTitle}
           </Heading>

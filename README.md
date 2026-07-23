@@ -31,46 +31,36 @@ The kit includes three polished templates, 17+ reusable components, a theme syst
 
 ## Features
 
-- 🧱 **17+ Reusable Components** — Header, Footer, Hero, Section, MetricCard, Timeline, DataTable, ChartPlaceholder, Callout, Badge, RecommendationCard, RiskCard, Quote, ImageBlock, References, ProgressBar, ContentBlock
-- 📊 **3 Professional Templates** — Executive Report, Research Report, Security Audit
-- 🎨 **Theme System** — Design tokens for colors, typography, spacing, and borders (light mode, dark-mode ready)
-- 📱 **Responsive & Print-Friendly** — Consistent layouts across screen sizes and print output
-- 🔤 **Data-Driven** — Templates consume typed data objects — no hardcoded content
-- ♿ **Accessible** — Semantic HTML, proper heading hierarchy, keyboard navigation, ARIA roles
-- 🖨️ **PDF-Ready** — Print the rendered output directly or convert to PDF
-- 🔧 **TypeScript** — Full type safety across components, data, and theme
+- 🖥️ **Interactive Elements Studio** — A 3-panel SaaS application showcasing live-editing of Unlayer Elements documents.
+- 🎛️ **Global State Management** — Real-time updates with Context, `useReducer`, and `localStorage` persistence.
+- 🧱 **19+ Reusable Components** — Includes `MetricCard`, `Timeline`, `DataTable`, `ChartPlaceholder`, `SummaryCard`, `InfoGrid`, and more.
+- 📊 **7 Professional Templates** — Executive Report, Research Report, Security Audit, Incident Report, Business Review, Investor Update, and Compliance Report.
+- 🎨 **Theme & Property Controls** — Context-sensitive right sidebar to edit section-level padding, backgrounds, and alignment on the fly.
+- 📱 **Responsive & Print-Friendly** — Consistent layouts across screen sizes and print output.
+- 🖨️ **Export Engine** — Download raw Elements HTML, JSON schema, or trigger system Print/PDF workflows.
+- 🔧 **TypeScript** — Full type safety across components, state, data, and theme.
 
 ---
 
 ## Architecture
 
-The project follows a composition-first architecture where templates are assembled from reusable components, and all rendering flows through Unlayer Elements.
+The project has evolved from a static template gallery into a fully functional **Elements Studio**.
+
+### Application Shell (The Editor)
+The Studio is built using standard React components (not Elements):
+- `EditorLayout`: The 3-panel shell.
+- `LeftSidebar`: Navigation, brand inputs, section selection, and export controls.
+- `RightSidebar`: Context-sensitive property editor for the currently selected section.
+- `useDocumentState`: The source of truth (Context + Reducer).
+
+### Document Rendering (The Core)
+Everything inside the document preview and export payload is rendered exclusively using **Unlayer Elements**.
 
 ```
-Template → Components → Elements Primitives → renderToHtml() → HTML Output
+Template → Components → Elements Primitives → renderToHtml() → Iframe Preview
 ```
 
-### Component Hierarchy
-
-```
-Document (Elements root wrapper)
-├── Hero (Row → Column → Heading + Paragraph + Html)
-├── Section (Row → Column → Heading + children)
-│   ├── ContentBlock (Row → Column → Paragraph)
-│   ├── MetricCardGrid (Row → Column → Html)
-│   ├── Timeline (Row → Column → Html)
-│   ├── DataTable (Row → Column → Html)
-│   ├── ChartPlaceholder (Row → Column → Html)
-│   ├── Callout (Row → Column → Html)
-│   ├── RecommendationCard (Row → Column → Html)
-│   ├── RiskCard (Row → Column → Html)
-│   └── Quote (Row → Column → Html)
-├── SectionDivider (Row → Column → Divider)
-├── References (Row → Column → Html)
-└── Footer (Row → Column → Html)
-```
-
-Every custom component internally composes Elements primitives (`Row`, `Column`, `Heading`, `Paragraph`, `Html`, `Divider`, `Image`). The `Html` component is used for custom-styled blocks like cards, badges, and charts — this is the official Elements approach for embedding custom HTML content.
+The `LivePreview` component acts as a subscriber to the global state. Whenever data, styles, or themes change, it triggers `renderToHtml()` and seamlessly updates the iframe.
 
 ---
 
@@ -78,233 +68,38 @@ Every custom component internally composes Elements primitives (`Row`, `Column`,
 
 ```
 elements-executive-report-kit/
-├── public/
-│   └── screenshots/          # Screenshot placeholders
 ├── src/
 │   ├── components/            # Reusable Elements-based components
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   ├── Hero.tsx
-│   │   ├── Section.tsx
-│   │   ├── SectionDivider.tsx
-│   │   ├── MetricCard.tsx
-│   │   ├── Timeline.tsx
-│   │   ├── DataTable.tsx
-│   │   ├── ChartPlaceholder.tsx
-│   │   ├── Callout.tsx
-│   │   ├── Badge.tsx
-│   │   ├── RecommendationCard.tsx
-│   │   ├── RiskCard.tsx
-│   │   ├── Quote.tsx
-│   │   ├── ImageBlock.tsx
-│   │   ├── References.tsx
-│   │   ├── ProgressBar.tsx
-│   │   ├── ContentBlock.tsx
-│   │   └── index.ts
-│   ├── data/                  # Sample data for templates
-│   │   ├── executive.ts
-│   │   ├── research.ts
-│   │   ├── security.ts
-│   │   ├── types.ts
-│   │   └── index.ts
-│   ├── templates/             # Document templates
-│   │   ├── executive/
-│   │   │   ├── ExecutiveReport.tsx
-│   │   │   └── index.ts
-│   │   ├── research/
-│   │   │   ├── ResearchReport.tsx
-│   │   │   └── index.ts
-│   │   ├── security/
-│   │   │   ├── SecurityAuditReport.tsx
-│   │   │   └── index.ts
-│   │   └── index.ts
-│   ├── theme/                 # Design tokens and theme system
-│   │   ├── theme.ts
-│   │   ├── types.ts
-│   │   └── index.ts
-│   ├── App.tsx                # Preview application
-│   ├── App.css
-│   ├── main.tsx
-│   ├── index.css
-│   └── vite-env.d.ts
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── LICENSE
-└── README.md
+│   ├── data/                  # Mock data for templates
+│   ├── editor/                # The React-based Studio UI (Sidebars, Layout)
+│   ├── hooks/                 # Global state management
+│   ├── preview/               # Live iframe renderer
+│   ├── renderer/              # Export utilities (HTML, JSON)
+│   ├── templates/             # 7 Document templates
+│   ├── theme/                 # Design tokens
+│   ├── App.tsx                # Mounts the Studio
+│   └── main.tsx
 ```
-
----
-
-## Theme System
-
-The theme system provides consistent design tokens used across all components:
-
-| Token Group | Values |
-|:---|:---|
-| **Colors** | Neutral palette (50–950), semantic (success, warning, danger, info), surface, text |
-| **Typography** | Inter font family, 10 size steps (xs–5xl), 4 weight levels, 3 line heights |
-| **Spacing** | 8-step scale (xs–4xl) plus section and page constants |
-| **Borders** | 5 radius values (sm–full), consistent border width |
-| **Layout** | Content width (800px), narrow width (640px) |
-
-The theme is structured so a dark mode variant can be added later by creating a new theme object that implements the same `Theme` interface.
-
-```typescript
-import { lightTheme, getTheme } from './theme';
-
-// Use directly
-const theme = lightTheme;
-
-// Or via factory (dark mode ready)
-const theme = getTheme('light');
-```
-
----
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/swaekaa/elements-executive-report-kit.git
-cd elements-executive-report-kit
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm run dev
-```
-
----
-
-## Running Locally
-
-```bash
-# Development server with hot reload
-npm run dev
-
-# Type checking
-npx tsc --noEmit
-
-# Production build
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-The preview application will be available at `http://localhost:5173`. Use the toolbar tabs to switch between templates and the Print button to export.
 
 ---
 
 ## Template Descriptions
 
-### 1. Executive Report
-
-A quarterly performance report suitable for leadership presentations and board meetings.
-
-**Sections:** Cover Page → Executive Summary → KPI Cards → Highlights → Timeline → Key Findings → Recommendations → Appendix → References → Footer
-
-**Components used:** Hero, Section, MetricCardGrid, Timeline, Callout, RecommendationCard, ContentBlock, References, Footer
-
-![Executive Report](public/screenshots/executive-report.png)
-
----
-
-### 2. Research Report
-
-An academic-style experiment report for ML/data science teams.
-
-**Sections:** Cover → Abstract → Objective → Dataset → Methodology → Results (table + chart) → Discussion → Future Work → References → Footer
-
-**Components used:** Hero, Section, DataTable, ChartPlaceholder, ContentBlock, References, Footer
-
-![Research Report](public/screenshots/research-report.png)
-
----
-
-### 3. Security Audit Report
-
-A professional security assessment with vulnerability findings and compliance status.
-
-**Sections:** Cover → Executive Summary → Scope → Vulnerability Overview (chart + table) → Detailed Findings → Recommendations → Compliance Status → Appendix → References → Footer
-
-**Components used:** Hero, Section, ChartPlaceholder, DataTable, RiskCard, RecommendationCard, Callout, ContentBlock, References, Footer
-
-![Security Audit Report](public/screenshots/security-audit.png)
-
----
-
-## Customization
-
-### Using Your Own Data
-
-Templates are fully data-driven. Replace the sample data with your own:
-
-```typescript
-import { ExecutiveReport } from './templates/executive';
-import type { ExecutiveReportData } from './data/types';
-
-const myData: ExecutiveReportData = {
-  organization: 'Your Company',
-  title: 'Your Report Title',
-  // ... fill in all fields
-};
-
-// Render to HTML
-const html = renderToHtml(<ExecutiveReport data={myData} />);
-```
-
-### Creating New Components
-
-Follow the established pattern — compose Elements primitives:
-
-```typescript
-import { Row, Column, Html } from '@unlayer/react-elements';
-import type { Theme } from '../theme';
-
-interface MyComponentProps {
-  content: string;
-  theme: Theme;
-}
-
-export const MyComponent: React.FC<MyComponentProps> = ({ content, theme }) => (
-  <Row backgroundColor={theme.colors.background} padding="16px 0">
-    <Column>
-      <Html html={`<div style="...">${content}</div>`} />
-    </Column>
-  </Row>
-);
-```
-
-### Modifying the Theme
-
-Edit `src/theme/theme.ts` to customize design tokens:
-
-```typescript
-export const lightTheme: Theme = {
-  colors: {
-    primary: '#your-color',
-    // ...
-  },
-  typography: {
-    fontFamily: "'Your Font', sans-serif",
-    // ...
-  },
-};
-```
+1. **Executive Report**: Quarterly performance report for leadership.
+2. **Research Report**: Academic-style experiment report.
+3. **Security Audit**: Vulnerability findings and risk matrices.
+4. **Incident Report**: Post-mortem timeline and root cause analysis.
+5. **Business Review**: Financial highlights and operational updates.
+6. **Investor Update**: CEO message and fundraising milestones.
+7. **Compliance Report**: SOC2 / Framework compliance assessment.
 
 ---
 
 ## Future Roadmap
 
-- [ ] Dark mode theme
-- [ ] Additional templates (Invoice, Proposal, Newsletter)
-- [ ] PDF export integration
-- [ ] Template gallery with visual previews
-- [ ] JSON export via `renderToJson()` for visual editor round-tripping
+- [ ] Dark mode theme controls in the sidebar
+- [ ] Drag-and-drop section reordering
+- [ ] Connect a real backend to save JSON schemas
 - [ ] Storybook component documentation
 - [ ] Unit tests for components and rendering
 
