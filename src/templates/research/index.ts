@@ -1,0 +1,1 @@
+export { ResearchReport } from './ResearchReport';
