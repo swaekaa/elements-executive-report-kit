@@ -35,6 +35,7 @@ export interface Artifact {
   themeOverride?: string; // Optional ID of a specific theme to use
   visibility: boolean;
   metadata?: Record<string, string>;
+  pages?: { id: string; name: string; isDefault?: boolean }[];
 }
 
 export interface ProjectMetadata {

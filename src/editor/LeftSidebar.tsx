@@ -143,6 +143,29 @@ export const LeftSidebar: React.FC = () => {
           ))}
         </CollapsibleSection>
 
+        {/* Pages Section */}
+        <CollapsibleSection title="Pages" icon={<Layers size={14} />} defaultOpen={true}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {['Overview (Default)', 'Appendix A', 'Financials'].map((page, i) => (
+              <div 
+                key={page}
+                style={{
+                  padding: '6px 12px 6px 36px',
+                  fontSize: '12px',
+                  color: i === 0 ? '#3B82F6' : '#374151',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: i === 0 ? '#DBEAFE' : 'transparent',
+                  borderLeft: i === 0 ? '2px solid #3B82F6' : '2px solid transparent'
+                }}
+              >
+                {page}
+              </div>
+            ))}
+          </div>
+        </CollapsibleSection>
+
         <CollapsibleSection title="Layers" icon={<Layers size={14} />} defaultOpen={true}>
           {layers.map(layer => {
             const layerId = layer.toLowerCase();

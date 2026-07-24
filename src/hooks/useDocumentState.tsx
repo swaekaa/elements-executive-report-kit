@@ -26,7 +26,7 @@ export interface ProjectState {
   activeArtifactId: string;
   
   // Studio UI State
-  activeLeftPanel: 'explorer' | 'components';
+  activeLeftPanel: 'explorer' | 'components' | 'theme';
   exportTab: ExportTab;
   zoom: number;
   devConsoleOpen: boolean;
@@ -70,7 +70,7 @@ type Action =
   | { type: 'UPDATE_ARTIFACT'; payload: { id: string; changes: Partial<Artifact> } }
   
   // Studio UI Actions (Don't trigger undo history)
-  | { type: 'SET_LEFT_PANEL'; payload: 'explorer' | 'components' }
+  | { type: 'SET_LEFT_PANEL'; payload: 'explorer' | 'components' | 'theme' }
   | { type: 'SET_ACTIVE_ARTIFACT'; payload: string }
   | { type: 'SET_SELECTED_SECTION'; payload: string | null }
   | { type: 'SET_EXPORT_TAB'; payload: ExportTab }

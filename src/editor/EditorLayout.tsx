@@ -7,12 +7,13 @@ import { CommandPalette } from './CommandPalette';
 import { StatusBar } from './StatusBar';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { ComponentLibrary } from './ComponentLibrary';
-import { Folder, Package, Settings } from 'lucide-react';
+import { ThemeBuilder } from './ThemeBuilder';
+import { Folder, Package, Settings, Palette } from 'lucide-react';
 
 const ActivityBar: React.FC = () => {
   const { state, dispatch } = useDocumentState();
   
-  const NavItem: React.FC<{ id: 'explorer' | 'components', icon: React.ReactNode, title: string }> = ({ id, icon, title }) => {
+  const NavItem: React.FC<{ id: 'explorer' | 'components' | 'theme', icon: React.ReactNode, title: string }> = ({ id, icon, title }) => {
     const isActive = state.leftSidebarOpen && state.activeLeftPanel === id;
     return (
       <button
@@ -58,6 +59,7 @@ const ActivityBar: React.FC = () => {
     }}>
       <NavItem id="explorer" icon={<Folder size={24} />} title="Project Explorer" />
       <NavItem id="components" icon={<Package size={24} />} title="Component Library" />
+      <NavItem id="theme" icon={<Palette size={24} />} title="Theme Builder" />
       <div style={{ flex: 1 }} />
       <button style={{
         width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -87,7 +89,9 @@ export const EditorLayout: React.FC = () => {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <ActivityBar />
         {state.leftSidebarOpen && (
-          state.activeLeftPanel === 'explorer' ? <LeftSidebar /> : <ComponentLibrary />
+          state.activeLeftPanel === 'explorer' ? <LeftSidebar /> : 
+          state.activeLeftPanel === 'components' ? <ComponentLibrary /> : 
+          <ThemeBuilder />
         )}
         <LivePreview />
         {state.rightSidebarOpen && <RightSidebar />}
