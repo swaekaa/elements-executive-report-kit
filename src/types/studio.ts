@@ -21,3 +21,26 @@ export interface StyleOverrides {
 }
 
 export type SectionStyles = Record<string, StyleOverrides>;
+
+/**
+ * An Artifact represents a specific output configuration of a project.
+ * Multiple artifacts (e.g. Email, Web Page, PDF) share the same document model.
+ */
+export interface Artifact {
+  id: string;
+  name: string;
+  icon?: string;
+  renderMode: RenderMode;
+  viewport: ViewportMode;
+  themeOverride?: string; // Optional ID of a specific theme to use
+  visibility: boolean;
+  metadata?: Record<string, string>;
+}
+
+export interface ProjectMetadata {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}

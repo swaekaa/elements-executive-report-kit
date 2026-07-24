@@ -37,8 +37,8 @@ export const StatusBar: React.FC = () => {
     }}>
       <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
         <Item icon={<Package size={12} />} label="Unlayer Elements v1.0.0" />
-        <Item icon={<Monitor size={12} />} label={`Viewport: ${state.viewport}`} />
-        <Item icon={<Eye size={12} />} label={`Render Mode: ${state.renderMode}`} />
+        <Item icon={<Monitor size={12} />} label={`Artifact: ${state.artifacts?.find(a => a.id === state.activeArtifactId)?.name || 'None'}`} />
+        <Item icon={<Eye size={12} />} label={`Render: ${state.artifacts?.find(a => a.id === state.activeArtifactId)?.renderMode || 'document'}`} />
         <Item icon={<ZoomIn size={12} />} label={`Zoom: ${Math.round(state.zoom * 100)}%`} />
       </div>
 

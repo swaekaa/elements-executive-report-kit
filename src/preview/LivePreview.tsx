@@ -113,7 +113,8 @@ export const LivePreview: React.FC = () => {
     return () => window.removeEventListener('message', handleMessage);
   }, [dispatch]);
 
-  const activeViewport = viewports[state.viewport] || viewports['desktop'];
+  const activeArtifact = state.artifacts?.find(a => a.id === state.activeArtifactId) || state.artifacts?.[0];
+  const activeViewport = viewports[activeArtifact?.viewport || 'desktop'] || viewports['desktop'];
 
   return (
     <div style={{

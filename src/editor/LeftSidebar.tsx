@@ -87,20 +87,19 @@ export const LeftSidebar: React.FC = () => {
     { id: 'compliance', label: 'Compliance Report' }
   ];
 
-  const artifacts: { id: RenderMode; viewport: ViewportMode; label: string; icon: React.ReactNode }[] = [
-    { id: 'document', viewport: 'a4', label: 'Document (PDF)', icon: <FileText size={14} /> },
-    { id: 'email', viewport: 'desktop', label: 'Email Broadcast', icon: <Mail size={14} /> },
-    { id: 'web', viewport: 'desktop', label: 'Landing Page', icon: <Monitor size={14} /> },
-    { id: 'web', viewport: 'phone', label: 'Mobile Version', icon: <Smartphone size={14} /> }
-  ];
-
   const themes = ['Corporate', 'Executive', 'Minimal', 'Dark', 'Academic'];
   const dataPresets = ['SaaS', 'AI Startup', 'Healthcare', 'Bank', 'Government'];
   const layers = ['Header', 'Cover', 'Summary', 'Metrics', 'Timeline', 'Tables', 'Charts', 'Recommendations', 'Appendix', 'Footer'];
 
-  const switchArtifact = (renderMode: RenderMode, viewport: ViewportMode) => {
-    dispatch({ type: 'SET_RENDER_MODE', payload: renderMode });
-    dispatch({ type: 'SET_VIEWPORT', payload: viewport });
+  const getArtifactIcon = (renderMode: string, viewport: string) => {
+    if (renderMode === 'email') return <Mail size={14} />;
+    if (renderMode === 'web' && viewport === 'phone') return <Smartphone size={14} />;
+    if (renderMode === 'web') return <Monitor size={14} />;
+    return <FileText size={14} />;
+  };
+
+  const switchArtifact = (id: string) => {
+    dispatch({ type: 'SET_ACTIVE_ARTIFACT', payload: id });
     dispatch({ type: 'SET_EXPORT_TAB', payload: 'preview' });
   };
 
@@ -117,18 +116,18 @@ export const LeftSidebar: React.FC = () => {
     }}>
       <div style={{ padding: '12px 16px', borderBottom: '1px solid #E5E7EB', fontWeight: 600, fontSize: '13px', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <Folder size={16} color="#3B82F6" />
-        Project Explorer
+        {state.projectMetadata?.name || 'Project Explorer'}
       </div>
 
       <div style={{ padding: '12px 0' }}>
         <CollapsibleSection title="Artifacts" icon={<FileText size={14} />} defaultOpen={true}>
-          {artifacts.map(a => (
+          {state.artifacts?.map(a => (
             <TreeItem 
-              key={`${a.id}-${a.viewport}`} 
-              label={a.label} 
-              icon={a.icon} 
-              active={state.renderMode === a.id && state.viewport === a.viewport}
-              onClick={() => switchArtifact(a.id, a.viewport)}
+              key={a.id} 
+              label={a.name} 
+              icon={getArtifactIcon(a.renderMode, a.viewport)} 
+              active={state.activeArtifactId === a.id}
+              onClick={() => switchArtifact(a.id)}
             />
           ))}
         </CollapsibleSection>

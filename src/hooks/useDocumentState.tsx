@@ -9,10 +9,11 @@ import { defaultVariables } from '../variables';
 import type { VariableMap } from '../variables';
 
 // Re-export from the shared types module (which has no internal imports)
-export type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles } from '../types/studio';
-import type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles } from '../types/studio';
+export type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
+import type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
 
-export interface DocumentState {
+export interface ProjectState {
+  projectMetadata: ProjectMetadata;
   activeTemplate: TemplateId;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   documentData: any;
@@ -20,10 +21,12 @@ export interface DocumentState {
   sectionStyles: SectionStyles;
   selectedSectionId: string | null;
   
+  // First-Class Artifacts
+  artifacts: Artifact[];
+  activeArtifactId: string;
+  
   // Studio UI State
-  renderMode: RenderMode;
   exportTab: ExportTab;
-  viewport: ViewportMode;
   zoom: number;
   devConsoleOpen: boolean;
   guidesEnabled: boolean;
@@ -35,9 +38,9 @@ export interface DocumentState {
 }
 
 export interface StateHistory {
-  past: DocumentState[];
-  present: DocumentState;
-  future: DocumentState[];
+  past: ProjectState[];
+  present: ProjectState;
+  future: ProjectState[];
 }
 
 type Action =
@@ -60,11 +63,15 @@ type Action =
   // Variable Actions (undoable)
   | { type: 'SET_VARIABLE'; payload: { key: string; value: string } }
   
+  // Artifact Actions
+  | { type: 'ADD_ARTIFACT'; payload: Artifact }
+  | { type: 'REMOVE_ARTIFACT'; payload: string }
+  | { type: 'UPDATE_ARTIFACT'; payload: { id: string; changes: Partial<Artifact> } }
+  
   // Studio UI Actions (Don't trigger undo history)
+  | { type: 'SET_ACTIVE_ARTIFACT'; payload: string }
   | { type: 'SET_SELECTED_SECTION'; payload: string | null }
-  | { type: 'SET_RENDER_MODE'; payload: RenderMode }
   | { type: 'SET_EXPORT_TAB'; payload: ExportTab }
-  | { type: 'SET_VIEWPORT'; payload: ViewportMode }
   | { type: 'SET_ZOOM'; payload: number }
   | { type: 'TOGGLE_DEV_CONSOLE' }
   | { type: 'TOGGLE_GUIDES' }
@@ -83,15 +90,29 @@ const getInitialData = (templateId: TemplateId) => {
   }
 };
 
-const initialDocumentState: DocumentState = {
+const defaultArtifacts: Artifact[] = [
+  { id: 'art-1', name: 'Executive Report', renderMode: 'document', viewport: 'a4', visibility: true },
+  { id: 'art-2', name: 'Email Broadcast', renderMode: 'email', viewport: 'desktop', visibility: true },
+  { id: 'art-3', name: 'Landing Page', renderMode: 'web', viewport: 'desktop', visibility: true },
+  { id: 'art-4', name: 'Mobile Version', renderMode: 'web', viewport: 'phone', visibility: true }
+];
+
+const initialProjectState: ProjectState = {
+  projectMetadata: {
+    id: 'proj-default',
+    name: 'AI Startup Series A',
+    description: 'Executive reporting for Q4',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
   activeTemplate: 'executive',
   documentData: getInitialData('executive'),
   theme: lightTheme,
   sectionStyles: {},
   selectedSectionId: null,
-  renderMode: 'document',
+  artifacts: defaultArtifacts,
+  activeArtifactId: 'art-1',
   exportTab: 'preview',
-  viewport: 'desktop',
   zoom: 1,
   devConsoleOpen: false,
   guidesEnabled: true,
@@ -102,7 +123,7 @@ const initialDocumentState: DocumentState = {
 
 const initialState: StateHistory = {
   past: [],
-  present: initialDocumentState,
+  present: initialProjectState,
   future: []
 };
 
@@ -137,13 +158,13 @@ const isUndoable = (actionType: string) => {
   return [
     'SET_TEMPLATE', 'UPDATE_DATA', 'UPDATE_THEME', 'UPDATE_SECTION_STYLE',
     'ARRAY_ADD', 'ARRAY_REMOVE', 'ARRAY_REORDER', 'ARRAY_DUPLICATE',
-    'SET_VARIABLE'
+    'SET_VARIABLE', 'ADD_ARTIFACT', 'REMOVE_ARTIFACT', 'UPDATE_ARTIFACT'
   ].includes(actionType);
 };
 
 const MAX_HISTORY = 50;
 
-const documentReducer = (state: DocumentState, action: Action): DocumentState => {
+const projectReducer = (state: ProjectState, action: Action): ProjectState => {
   switch (action.type) {
     case 'SET_TEMPLATE':
       return {
@@ -218,14 +239,27 @@ const documentReducer = (state: DocumentState, action: Action): DocumentState =>
         }
       };
     }
+    case 'ADD_ARTIFACT':
+      return { ...state, artifacts: [...state.artifacts, action.payload] };
+    case 'REMOVE_ARTIFACT':
+      return { 
+        ...state, 
+        artifacts: state.artifacts.filter(a => a.id !== action.payload),
+        activeArtifactId: state.activeArtifactId === action.payload ? state.artifacts[0]?.id : state.activeArtifactId
+      };
+    case 'UPDATE_ARTIFACT':
+      return {
+        ...state,
+        artifacts: state.artifacts.map(a => 
+          a.id === action.payload.id ? { ...a, ...action.payload.changes } : a
+        )
+      };
+    case 'SET_ACTIVE_ARTIFACT':
+      return { ...state, activeArtifactId: action.payload };
     case 'SET_SELECTED_SECTION':
       return { ...state, selectedSectionId: action.payload };
-    case 'SET_RENDER_MODE':
-      return { ...state, renderMode: action.payload };
     case 'SET_EXPORT_TAB':
       return { ...state, exportTab: action.payload };
-    case 'SET_VIEWPORT':
-      return { ...state, viewport: action.payload };
     case 'SET_ZOOM':
       return { ...state, zoom: Math.max(0.25, Math.min(3, action.payload)) };
     case 'TOGGLE_DEV_CONSOLE':
@@ -266,7 +300,7 @@ const historyReducer = (state: StateHistory, action: Action): StateHistory => {
     };
   }
 
-  const newPresent = documentReducer(state.present, action);
+  const newPresent = projectReducer(state.present, action);
 
   if (state.present === newPresent) {
     return state;
@@ -288,28 +322,33 @@ const historyReducer = (state: StateHistory, action: Action): StateHistory => {
   }
 };
 
-const DocumentContext = createContext<{
-  state: DocumentState;
+const ProjectContext = createContext<{
+  state: ProjectState;
   dispatch: React.Dispatch<Action>;
   canUndo: boolean;
   canRedo: boolean;
 }>({
-  state: initialDocumentState,
+  state: initialProjectState,
   dispatch: () => null,
   canUndo: false,
   canRedo: false
 });
 
-export const DocumentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const useProjectState = () => useContext(ProjectContext);
+export const useDocumentState = useProjectState;
+
+export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [historyState, dispatch] = useReducer(historyReducer, initialState, (initial) => {
     try {
-      const saved = localStorage.getItem('elements-studio-state-v2');
+      const saved = localStorage.getItem('elements-studio-state-v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         // Safely merge present state with initial to avoid undefined properties
         if (parsed && parsed.present) {
           parsed.present = { ...initial.present, ...parsed.present };
           if (!parsed.present.sectionStyles) parsed.present.sectionStyles = {};
+          if (!parsed.present.artifacts) parsed.present.artifacts = initial.present.artifacts;
+          if (!parsed.present.activeArtifactId) parsed.present.activeArtifactId = initial.present.activeArtifactId;
         }
         return parsed;
       }
@@ -320,7 +359,7 @@ export const DocumentProvider: React.FC<{ children: ReactNode }> = ({ children }
   });
 
   useEffect(() => {
-    localStorage.setItem('elements-studio-state-v2', JSON.stringify(historyState));
+    localStorage.setItem('elements-studio-state-v3', JSON.stringify(historyState));
   }, [historyState]);
 
   // Global Keyboard Shortcuts
@@ -345,15 +384,13 @@ export const DocumentProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   return (
-    <DocumentContext.Provider value={{ 
+    <ProjectContext.Provider value={{ 
       state: historyState.present, 
       dispatch,
       canUndo: historyState.past.length > 0,
       canRedo: historyState.future.length > 0
     }}>
       {children}
-    </DocumentContext.Provider>
+    </ProjectContext.Provider>
   );
 };
-
-export const useDocumentState = () => useContext(DocumentContext);

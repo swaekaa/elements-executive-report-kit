@@ -1,4 +1,4 @@
-import { DocumentProvider } from './hooks/useDocumentState';
+import { ProjectProvider } from './hooks/useDocumentState';
 import { EditorLayout } from './editor/EditorLayout';
 
 /**
@@ -7,9 +7,9 @@ import { EditorLayout } from './editor/EditorLayout';
  */
 function App() {
   return (
-    <DocumentProvider>
+    <ProjectProvider>
       <EditorLayout />
-    </DocumentProvider>
+    </ProjectProvider>
   );
 }
 

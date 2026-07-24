@@ -1,16 +1,16 @@
 import React from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { Undo, Redo, Monitor, FileText, Mail, Layout, Code, FileJson, Type, Box } from 'lucide-react';
-import type { RenderMode, ExportTab } from '../hooks/useDocumentState';
+import type { ExportTab } from '../hooks/useDocumentState';
 
 export const TopToolbar: React.FC = () => {
   const { state, dispatch, canUndo, canRedo } = useDocumentState();
 
-  const renderModes: { id: RenderMode; label: string; icon: React.ReactNode }[] = [
-    { id: 'email', label: 'EMAIL', icon: <Mail size={14} /> },
-    { id: 'document', label: 'DOCUMENT', icon: <FileText size={14} /> },
-    { id: 'web', label: 'WEB PAGE', icon: <Monitor size={14} /> }
-  ];
+  const getArtifactIcon = (renderMode: string) => {
+    if (renderMode === 'email') return <Mail size={14} />;
+    if (renderMode === 'web') return <Monitor size={14} />;
+    return <FileText size={14} />;
+  };
 
   const exportTabs: { id: ExportTab; label: string; icon: React.ReactNode }[] = [
     { id: 'preview', label: 'Preview', icon: <Layout size={14} /> },
@@ -73,30 +73,30 @@ export const TopToolbar: React.FC = () => {
         <div style={{ fontSize: '12px', color: '#9CA3AF' }}>Saved locally</div>
       </div>
 
-      {/* Center: Render Mode Switcher */}
+      {/* Center: Artifact Switcher */}
       <div style={{ display: 'flex', backgroundColor: '#F3F4F6', padding: '4px', borderRadius: '6px', gap: '4px' }}>
-        {renderModes.map(mode => (
+        {state.artifacts?.map(artifact => (
           <button
-            key={mode.id}
-            onClick={() => dispatch({ type: 'SET_RENDER_MODE', payload: mode.id })}
+            key={artifact.id}
+            onClick={() => dispatch({ type: 'SET_ACTIVE_ARTIFACT', payload: artifact.id })}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
               padding: '6px 12px',
               border: 'none',
-              background: state.renderMode === mode.id ? '#FFFFFF' : 'transparent',
-              boxShadow: state.renderMode === mode.id ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+              background: state.activeArtifactId === artifact.id ? '#FFFFFF' : 'transparent',
+              boxShadow: state.activeArtifactId === artifact.id ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
               borderRadius: '4px',
-              color: state.renderMode === mode.id ? '#111827' : '#6B7280',
-              fontWeight: state.renderMode === mode.id ? 600 : 500,
+              color: state.activeArtifactId === artifact.id ? '#111827' : '#6B7280',
+              fontWeight: state.activeArtifactId === artifact.id ? 600 : 500,
               cursor: 'pointer',
               fontSize: '11px',
               letterSpacing: '0.05em'
             }}
           >
-            {mode.icon}
-            {mode.label}
+            {getArtifactIcon(artifact.renderMode)}
+            {artifact.name.toUpperCase()}
           </button>
         ))}
       </div>

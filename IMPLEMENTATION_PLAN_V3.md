@@ -1,88 +1,71 @@
-# Elements Studio IDE — Implementation Plan V3
+# Elements Studio IDE — Implementation Plan V3 (Approved)
 
-This plan outlines the architectural shift from a "Document Editor" to the **Official IDE for Unlayer Elements**. The primary goal is to build a development environment that makes "build once with Elements, preview and export everywhere" a reality. 
+This plan outlines the architectural shift from a "Document Editor" to the **Official IDE for Unlayer Elements**. The primary goal is to build a development environment that makes "build once with Elements, preview and export everywhere" a reality.
 
-## Architectural Philosophy
-1. **The Project Model:** The root entity is a `Project`, containing multiple `Artifacts` (Document, Email, Web, etc.). They all share one central data and variable model.
-2. **Variable Binding System:** This is the crown jewel. Values like `{{company.name}}` are dynamically resolved across all artifacts instantly.
-3. **Elements Engine:** Unlayer Elements remains the strict, unmodified rendering pipeline. All edits mutate the abstract document model, never the generated HTML.
+## 17 Core Architectural Principles
 
----
-
-## User Review Required
-
-> [!IMPORTANT]
-> The **Variable Binding System** has been rapidly prototyped in the background. If you reload your local server (`http://localhost:5173`), you will see the `Variables` panel live in the Left Sidebar. This is the first taste of the core feature! 
-> 
-> Before I proceed with the massive refactoring for the rest of the IDE features, please review the phases below and confirm this architecture matches your exact vision.
-
-## Open Questions
-
-> [!WARNING]
-> **1. Data Sources vs Variables:** How strictly should we separate "Variables" (`{{author.name}}`) from "Data Sources" (JSON/APIs)? Should variables be considered a subset of Data Sources, or remain a distinct UI panel?
-> **2. Component Library Rendering:** To build the "Insert Component" drag-and-drop workflow, I will need to render mini-previews of Elements primitives. Do you want these previews rendered dynamically via Elements, or static image thumbnails to save performance?
-
----
-
-## Proposed Changes
-
-### Phase 1: The Core IDE Project Structure
-We will transition the Left Sidebar and top-level state from a single document view to a full Project Explorer.
-
-#### [MODIFY] `src/hooks/useDocumentState.tsx`
-- Rename state abstractions conceptually to `ProjectState`.
-- Support multiple distinct `Artifacts` instead of just switching render modes.
-
-#### [MODIFY] `src/editor/LeftSidebar.tsx`
-- Refine the VS Code style explorer with Collapsible Sections for: Project, Artifacts, Templates, Components, Layers, Assets, Themes, Variables, Data Sources, Exports, History.
-- Introduce hover states for Lock/Hide/Duplicate actions.
-
-### Phase 2: The Asset Manager & Component Library
-We will introduce a Figma/Storybook style component library.
-
-#### [NEW] `src/editor/AssetManager.tsx`
-- Build a dedicated modal/panel for uploading and managing images, logos, and SVGs.
-
-#### [NEW] `src/editor/ComponentLibrary.tsx`
-- Create a visual catalog of reusable Elements templates (Cards, Metrics, Charts).
-- Prepare the architecture for future drag-and-drop insertion.
-
-### Phase 3: The Dynamic Inspector & Theme Builder
-The Right Sidebar will become contextually aware.
-
-#### [MODIFY] `src/editor/RightSidebar.tsx`
-- Replace the generic inspector with dedicated controls (e.g., Timeline Editor vs Metric Editor).
-- Read the active component type via the tracking script in `LivePreview.tsx`.
-
-#### [NEW] `src/editor/ThemeBuilder.tsx`
-- Build a comprehensive design system editor mapping to Elements themes (Colors, Typography, Radius, Borders, Shadows).
-
-### Phase 4: Monaco & Split View Integration
-Bring true developer tools into the studio.
-
-#### [NEW] `src/editor/SplitView.tsx`
-- Implement resizable panes allowing Preview + HTML or Preview + JSON side-by-side.
-
-#### [NEW] `src/editor/MonacoEditor.tsx`
-- Integrate Monaco for syntax-highlighted editing of JSON data and output inspection.
-
-### Phase 5: Export Center & Bottom Panel
-Complete the VS Code / Unlayer hybrid experience.
-
-#### [MODIFY] `src/editor/DevConsole.tsx`
-- Build the Bottom Panel with tabs: Console, Validation, Render Tree, Accessibility.
-
-#### [NEW] `src/editor/ExportCenter.tsx`
-- Build a dedicated workflow for exporting HTML, PDF, Markdown, LaTeX, and Design JSON.
+1. **Variables vs Data Sources:** Strict separation. Data Sources (JSON, API) feed into Variables (key/value), which resolve the Document Model, which feeds Elements to render Artifacts.
+2. **Component Library Rendering:** Previews must be rendered dynamically using the Unlayer Elements renderer (with lazy loading and memoization), not static screenshots.
+3. **Component Registry:** A central registry (`registry/`) storing metadata (id, name, properties schema, default props, category) for all reusable components to enable drag-and-drop.
+4. **Property Schema:** Components expose a schema describing their editable properties. The Right Sidebar Inspector generates itself dynamically from this schema.
+5. **Document Model Separation:** Editor State -> Resolver -> Elements Renderer. Rendered HTML is never mutated directly.
+6. **Artifact System:** First-class artifact objects (Document, Email, Web). The project supports unlimited artifacts using the same document model.
+7. **Render Pipeline:** A dedicated, reusable pipeline: `Editor -> Resolver -> Elements Renderer -> Artifact -> Export`.
+8. **Variable Inspector:** Typed variables (String, Color, Image, etc.) with metadata (description, binding count). Clicking a variable shows its usage locations.
+9. **Dependency Graph:** Track variable usage (Variable -> Components -> Artifacts) for debugging and optimized selective rerendering.
+10. **Component Insertion:** Drag-and-drop metadata allows inserting, nesting, wrapping, and replacing components dynamically.
+11. **Multi-Page Support:** Explicit page models (Project -> Artifact -> Pages -> Sections -> Components). Not just one infinite scrolling report.
+12. **Theme System:** Strict design tokens mapping (Design Tokens -> Theme -> Component Overrides -> Resolved Styles). No hardcoded colors.
+13. **History Operations:** Undo/Redo operates on structural operations (e.g., "Insert Component") rather than just keystrokes.
+14. **Performance:** Dependency tracking ensures only components affected by a variable change are re-rendered.
+15. **Component Marketplace:** Plugin architecture allowing future npm packages (e.g., `@elements/charts`) to register components automatically.
+16. **Documentation:** The architecture must be thoroughly documented using Mermaid diagrams.
+17. **Final Product Vision:** A VS Code + Storybook + Figma + Unlayer + React DevTools hybrid, built specifically for Elements.
 
 ---
 
-## Verification Plan
+## Execution Phases
 
-### Automated Tests
-- Typecheck the entire project with strict mode enabled (`tsc --noEmit`).
-- Ensure no circular dependencies are introduced during the massive refactor.
+### Phase 1: Core IDE Project Structure & Artifact System
+- Refactor `useDocumentState.tsx` to `ProjectState`.
+- Implement first-class Artifact objects supporting unlimited configurations.
+- Update `LeftSidebar.tsx` into a VS Code style explorer with collapsible panels.
 
-### Manual Verification
-- We will manually test the Variable Binding System: changing `{{company.name}}` should instantly update the Web, Email, and Document views.
-- We will test the Monaco editor initialization and ensuring HMR does not crash the React tree.
+### Phase 2: Component Registry & Library Browser
+- Create `src/registry` for Component Metadata schemas.
+- Build the `ComponentLibrary.tsx` with dynamically rendered Unlayer Elements previews.
+- Implement lazy-loading for component previews.
+
+### Phase 3: Variable System Upgrades & Dependency Graph
+- Expand the Variable System to support Types (String, Color, Image, Array).
+- Build dependency tracking to locate where variables are used.
+- Optimize the `LivePreview` to only re-render affected components when a variable changes.
+
+### Phase 4: Dynamic Inspector & Schema Engine
+- Create the Property Schema engine.
+- Refactor `RightSidebar.tsx` to auto-generate controls based on the selected component's schema.
+
+### Phase 5: Theme Builder & Multi-Page Support
+- Implement the Design Token Theme Builder.
+- Add Multi-page support to Artifacts.
+
+### Phase 6: Monaco, Split View & Bottom Panel
+- Integrate Monaco for JSON editing.
+- Build Resizable Split Views (Preview + Code).
+- Build the Developer Console (Validation, Render Tree, Output).
+
+---
+
+## Architecture Flow
+
+```mermaid
+graph TD
+    DS[Data Sources] --> V[Variables Engine]
+    V --> M[Document Model]
+    M --> R[Resolver]
+    R --> E[Elements Renderer]
+    E --> A[Artifacts]
+    A --> PDF[PDF Export]
+    A --> WEB[Web Output]
+    A --> EMAIL[Email Output]
+```
