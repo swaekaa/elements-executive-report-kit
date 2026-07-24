@@ -114,10 +114,18 @@ export const ThemeBuilder: React.FC = () => {
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '12px', color: '#374151' }}>Heading Font</label>
+              <label style={{ fontSize: '12px', color: '#374151' }}>Base Font</label>
               <select 
-                value={state.theme.typography.fontFamily.heading.split(',')[0].replace(/['"]/g, '')}
-                onChange={(e) => handleFontChange('heading', `"${e.target.value}", sans-serif`)}
+                value={state.theme.typography.fontFamily.split(',')[0].replace(/['"]/g, '')}
+                onChange={(e) => dispatch({
+                  type: 'UPDATE_THEME',
+                  payload: {
+                    typography: {
+                      ...state.theme.typography,
+                      fontFamily: `"${e.target.value}", sans-serif`
+                    }
+                  }
+                })}
                 style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }}
               >
                 <option value="Inter">Inter</option>
@@ -129,17 +137,24 @@ export const ThemeBuilder: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '12px', color: '#374151' }}>Body Font</label>
+              <label style={{ fontSize: '12px', color: '#374151' }}>Monospace Font</label>
               <select 
-                value={state.theme.typography.fontFamily.body.split(',')[0].replace(/['"]/g, '')}
-                onChange={(e) => handleFontChange('body', `"${e.target.value}", sans-serif`)}
+                value={state.theme.typography.fontFamilyMono.split(',')[0].replace(/['"]/g, '')}
+                onChange={(e) => dispatch({
+                  type: 'UPDATE_THEME',
+                  payload: {
+                    typography: {
+                      ...state.theme.typography,
+                      fontFamilyMono: `"${e.target.value}", monospace`
+                    }
+                  }
+                })}
                 style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }}
               >
-                <option value="Inter">Inter</option>
-                <option value="Helvetica">Helvetica</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Open Sans">Open Sans</option>
+                <option value="SF Mono">SF Mono</option>
+                <option value="Fira Code">Fira Code</option>
+                <option value="Menlo">Menlo</option>
+                <option value="Courier New">Courier New</option>
               </select>
             </div>
           </div>
