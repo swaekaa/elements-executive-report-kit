@@ -1,179 +1,207 @@
-import React from 'react';
-import { useDocumentState, TemplateId } from '../hooks/useDocumentState';
-import { FileText, Shield, FlaskConical, LayoutTemplate, Briefcase, TrendingUp, ShieldAlert, Palette, Type, Settings2, Download, Code } from 'lucide-react';
-import { exportToHtml, exportToJson } from '../renderer/exportUtils';
-import { ExecutiveReport } from '../templates/executive';
-import { ResearchReport } from '../templates/research';
-import { SecurityAuditReport } from '../templates/security';
+import React, { useState } from 'react';
+import { useDocumentState } from '../hooks/useDocumentState';
+import { 
+  ChevronRight, ChevronDown, Folder, FileText, Mail, Monitor, Smartphone,
+  Layers, Image as ImageIcon, Palette, Database, LayoutTemplate, Type
+} from 'lucide-react';
+import type { TemplateId, ViewportMode, RenderMode } from '../types/studio';
+
+const CollapsibleSection: React.FC<{ title: string; icon: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }> = ({ title, icon, defaultOpen = false, children }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div style={{ marginBottom: '2px' }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '6px 12px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          color: '#374151',
+          fontSize: '12px',
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
+        }}
+      >
+        <span style={{ color: '#9CA3AF', display: 'flex', alignItems: 'center' }}>
+          {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6B7280' }}>
+          {icon}
+        </span>
+        {title}
+      </button>
+      {isOpen && (
+        <div style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TreeItem: React.FC<{ 
+  label: string; 
+  icon?: React.ReactNode; 
+  active?: boolean; 
+  onClick?: () => void;
+}> = ({ label, icon, active, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '6px 12px',
+      background: active ? '#EFF6FF' : 'transparent',
+      border: 'none',
+      borderLeft: `2px solid ${active ? '#3B82F6' : 'transparent'}`,
+      cursor: 'pointer',
+      color: active ? '#1D4ED8' : '#374151',
+      fontSize: '13px',
+      textAlign: 'left',
+      borderRadius: '0 4px 4px 0'
+    }}
+  >
+    {icon && <span style={{ color: active ? '#3B82F6' : '#9CA3AF' }}>{icon}</span>}
+    {label}
+  </button>
+);
 
 export const LeftSidebar: React.FC = () => {
   const { state, dispatch } = useDocumentState();
 
-  const templates: { id: TemplateId; label: string; icon: React.ReactNode }[] = [
-    { id: 'executive', label: 'Executive Report', icon: <Briefcase size={16} /> },
-    { id: 'research', label: 'Research Report', icon: <FlaskConical size={16} /> },
-    { id: 'security', label: 'Security Audit', icon: <Shield size={16} /> },
-    { id: 'incident', label: 'Incident Report', icon: <ShieldAlert size={16} /> },
-    { id: 'business', label: 'Business Review', icon: <TrendingUp size={16} /> },
-    { id: 'investor', label: 'Investor Update', icon: <LayoutTemplate size={16} /> },
-    { id: 'compliance', label: 'Compliance Report', icon: <FileText size={16} /> },
+  const templates: { id: TemplateId; label: string }[] = [
+    { id: 'executive', label: 'Executive Report' },
+    { id: 'research', label: 'Research Report' },
+    { id: 'security', label: 'Security Audit' },
+    { id: 'incident', label: 'Incident Report' },
+    { id: 'business', label: 'Business Review' },
+    { id: 'investor', label: 'Investor Update' },
+    { id: 'compliance', label: 'Compliance Report' }
   ];
 
-  // Helper to get generic sections from the current document data
-  const getSections = () => {
-    const data = state.documentData;
-    const sections = [];
-    if (data.executiveSummary || data.abstract) sections.push({ id: 'summary', label: 'Summary' });
-    if (data.metrics) sections.push({ id: 'metrics', label: 'Metrics' });
-    if (data.highlights) sections.push({ id: 'highlights', label: 'Highlights' });
-    if (data.timeline) sections.push({ id: 'timeline', label: 'Timeline' });
-    if (data.findings || data.vulnerabilities) sections.push({ id: 'findings', label: 'Findings' });
-    if (data.recommendations) sections.push({ id: 'recommendations', label: 'Recommendations' });
-    if (data.appendix) sections.push({ id: 'appendix', label: 'Appendix' });
-    return sections;
-  };
+  const artifacts: { id: RenderMode; viewport: ViewportMode; label: string; icon: React.ReactNode }[] = [
+    { id: 'document', viewport: 'a4', label: 'Document (PDF)', icon: <FileText size={14} /> },
+    { id: 'email', viewport: 'desktop', label: 'Email Broadcast', icon: <Mail size={14} /> },
+    { id: 'web', viewport: 'desktop', label: 'Landing Page', icon: <Monitor size={14} /> },
+    { id: 'web', viewport: 'phone', label: 'Mobile Version', icon: <Smartphone size={14} /> }
+  ];
 
-  const handleExportHtml = () => {
-    const el = getTemplateElement();
-    exportToHtml(el, `${state.activeTemplate}.html`);
-  };
+  const themes = ['Corporate', 'Executive', 'Minimal', 'Dark', 'Academic'];
+  const dataPresets = ['SaaS', 'AI Startup', 'Healthcare', 'Bank', 'Government'];
+  const layers = ['Header', 'Cover', 'Summary', 'Metrics', 'Timeline', 'Tables', 'Charts', 'Recommendations', 'Appendix', 'Footer'];
 
-  const handleExportJson = () => {
-    const el = getTemplateElement();
-    exportToJson(el, `${state.activeTemplate}.json`);
-  };
-
-  const getTemplateElement = () => {
-    switch (state.activeTemplate) {
-      case 'executive': return <ExecutiveReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />;
-      case 'research': return <ResearchReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />;
-      case 'security': return <SecurityAuditReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />;
-      default: return <ExecutiveReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />;
-    }
+  const switchArtifact = (renderMode: RenderMode, viewport: ViewportMode) => {
+    dispatch({ type: 'SET_RENDER_MODE', payload: renderMode });
+    dispatch({ type: 'SET_VIEWPORT', payload: viewport });
+    dispatch({ type: 'SET_EXPORT_TAB', payload: 'preview' });
   };
 
   return (
-    <div className="w-64 bg-[#FAFAFA] border-r border-[#E5E5E5] flex flex-col h-full overflow-y-auto" style={{
-      width: '260px',
-      backgroundColor: 'var(--color-bg)',
-      borderRight: '1px solid var(--color-border)',
+    <div style={{
+      width: '280px',
+      backgroundColor: '#F9FAFB',
+      borderRight: '1px solid #E5E7EB',
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
+      userSelect: 'none',
       overflowY: 'auto'
     }}>
-      <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--color-border)' }}>
-        <h2 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Documents</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {templates.map(t => (
-            <button
-              key={t.id}
-              onClick={() => dispatch({ type: 'SET_TEMPLATE', payload: t.id })}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: 'none',
-                background: state.activeTemplate === t.id ? '#EAEAEA' : 'transparent',
-                color: state.activeTemplate === t.id ? 'var(--color-text)' : 'var(--color-text-secondary)',
-                fontSize: '14px',
-                fontWeight: state.activeTemplate === t.id ? 500 : 400,
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              {t.icon}
-              {t.label}
-            </button>
-          ))}
-        </div>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #E5E7EB', fontWeight: 600, fontSize: '13px', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Folder size={16} color="#3B82F6" />
+        Project Explorer
       </div>
 
-      <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--color-border)' }}>
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
-          <Palette size={14} /> Brand
-        </h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Organization Name</label>
-            <input 
-              type="text" 
-              value={state.documentData.organization || ''} 
-              onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'organization', value: e.target.value } })}
-              style={{ width: '100%', padding: '6px 8px', fontSize: '13px', border: '1px solid var(--color-border)', borderRadius: '4px', background: 'var(--color-surface)', color: 'var(--color-text)' }}
+      <div style={{ padding: '12px 0' }}>
+        <CollapsibleSection title="Artifacts" icon={<FileText size={14} />} defaultOpen={true}>
+          {artifacts.map(a => (
+            <TreeItem 
+              key={`${a.id}-${a.viewport}`} 
+              label={a.label} 
+              icon={a.icon} 
+              active={state.renderMode === a.id && state.viewport === a.viewport}
+              onClick={() => switchArtifact(a.id, a.viewport)}
             />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Accent Color</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input 
-                type="color" 
-                value={state.theme.colors.semantic?.info || '#2563EB'} 
-                onChange={(e) => {
-                  dispatch({ type: 'UPDATE_THEME', payload: { colors: { ...state.theme.colors, semantic: { ...state.theme.colors.semantic, info: e.target.value } } as any } })
-                }}
-                style={{ width: '28px', height: '28px', padding: '0', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-              />
-              <span style={{ fontSize: '13px', color: 'var(--color-text)', lineHeight: '28px' }}>{state.theme.colors.semantic?.info || '#2563EB'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--color-border)' }}>
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
-          <Settings2 size={14} /> Content Sections
-        </h2>
-        <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '12px' }}>Click a section to edit properties.</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {getSections().map(sec => (
-            <button
-              key={sec.id}
-              onClick={() => dispatch({ type: 'SET_SELECTED_SECTION', payload: sec.id })}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                border: 'none',
-                background: state.selectedSectionId === sec.id ? 'var(--color-surface)' : 'transparent',
-                color: state.selectedSectionId === sec.id ? 'var(--color-text)' : 'var(--color-text-secondary)',
-                boxShadow: state.selectedSectionId === sec.id ? '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.025)' : 'none',
-                fontSize: '13px',
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Type size={14} />
-              {sec.label}
-            </button>
           ))}
-        </div>
-      </div>
+        </CollapsibleSection>
 
-      <div style={{ padding: '20px 16px' }}>
-        <h2 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Export</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <button 
-            onClick={handleExportHtml}
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '6px', cursor: 'pointer', color: 'var(--color-text)' }}
-          >
-            <Download size={14} /> Export HTML
-          </button>
-          <button 
-            onClick={handleExportJson}
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '6px', cursor: 'pointer', color: 'var(--color-text)' }}
-          >
-            <Code size={14} /> Export Design JSON
-          </button>
-        </div>
-      </div>
+        <CollapsibleSection title="Templates" icon={<LayoutTemplate size={14} />} defaultOpen={true}>
+          {templates.map(t => (
+            <TreeItem 
+              key={t.id} 
+              label={t.label} 
+              active={state.activeTemplate === t.id}
+              onClick={() => dispatch({ type: 'SET_TEMPLATE', payload: t.id })}
+            />
+          ))}
+        </CollapsibleSection>
 
+        <CollapsibleSection title="Layers" icon={<Layers size={14} />} defaultOpen={true}>
+          {layers.map(layer => {
+            const layerId = layer.toLowerCase();
+            return (
+              <TreeItem 
+                key={layerId} 
+                label={layer} 
+                active={state.selectedSectionId === layerId}
+                onClick={() => dispatch({ type: 'SET_SELECTED_SECTION', payload: layerId })}
+              />
+            );
+          })}
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Themes" icon={<Palette size={14} />}>
+          {themes.map(theme => (
+            <TreeItem key={theme} label={theme} />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Variables" icon={<Type size={14} />} defaultOpen={true}>
+          <div style={{ padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {Object.values(state.variables || {}).map(v => (
+              <div key={v.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '11px', color: '#6B7280', fontWeight: 500 }}>{v.label}</label>
+                <input
+                  type="text"
+                  value={v.value}
+                  onChange={(e) => dispatch({ type: 'SET_VARIABLE', payload: { key: v.key, value: e.target.value } })}
+                  style={{
+                    width: '100%',
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '4px',
+                    outline: 'none',
+                    color: '#374151'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
+                  onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
+                />
+              </div>
+            ))}
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Data Presets" icon={<Database size={14} />}>
+          {dataPresets.map(preset => (
+            <TreeItem key={preset} label={preset} />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Assets" icon={<ImageIcon size={14} />}>
+          <TreeItem label="Logo (Dark).png" />
+          <TreeItem label="Logo (Light).png" />
+          <TreeItem label="cover-bg.jpg" />
+        </CollapsibleSection>
+      </div>
     </div>
   );
 };

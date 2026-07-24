@@ -1,7 +1,17 @@
 import type { TimelineItem } from '../components';
 import type { ReferenceItem } from '../components';
+import type { Theme } from '../theme';
+import type { SectionStyles, RenderMode } from '../types/studio';
 
 /* ── Type Definitions ── */
+
+export interface BaseTemplateProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+  theme: Theme;
+  sectionStyles?: SectionStyles;
+  renderMode?: RenderMode;
+}
 
 export interface MetricData {
   label: string;

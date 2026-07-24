@@ -10,84 +10,175 @@ import { BusinessReview } from '../templates/business/BusinessReview';
 import { InvestorUpdate } from '../templates/investor/InvestorUpdate';
 import { ComplianceReport } from '../templates/compliance/ComplianceReport';
 
+const viewports: Record<string, { width: string; height: string }> = {
+  desktop: { width: '1440px', height: '900px' },
+  laptop: { width: '1280px', height: '800px' },
+  tablet: { width: '768px', height: '1024px' },
+  phone: { width: '375px', height: '812px' },
+  foldable: { width: '844px', height: '1133px' },
+  square: { width: '800px', height: '800px' },
+  letter: { width: '816px', height: '1056px' },
+  a4: { width: '794px', height: '1123px' },
+  poster: { width: '1728px', height: '2592px' },
+  presentation: { width: '1920px', height: '1080px' },
+  tv: { width: '3840px', height: '2160px' },
+  cinema: { width: '4096px', height: '1716px' },
+  imax: { width: '4096px', height: '2987px' },
+  'vision-pro': { width: '2560px', height: '1440px' },
+  watch: { width: '198px', height: '242px' },
+  kindle: { width: '1080px', height: '1440px' },
+  ultrawide: { width: '3440px', height: '1440px' }
+};
+
+import { resolveVariablesDeep } from '../variables';
+
 export const LivePreview: React.FC = () => {
-  const { state } = useDocumentState();
+  const { state, dispatch } = useDocumentState();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Render the selected template to HTML using Elements renderToHtml()
-  const renderedHtml = useMemo(() => {
+  const getTemplate = () => {
+    // Deep-resolve all {{variable}} bindings in the document data before rendering
+    const resolvedData = resolveVariablesDeep(state.documentData, state.variables);
+    const props = { data: resolvedData, sectionStyles: state.sectionStyles, theme: state.theme };
     switch (state.activeTemplate) {
-      case 'executive':
-        return renderToHtml(<ExecutiveReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      case 'research':
-        return renderToHtml(<ResearchReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      case 'security':
-        return renderToHtml(<SecurityAuditReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      case 'incident':
-        return renderToHtml(<IncidentReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      case 'business':
-        return renderToHtml(<BusinessReview data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      case 'investor':
-        return renderToHtml(<InvestorUpdate data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      case 'compliance':
-        return renderToHtml(<ComplianceReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
-      default:
-        return renderToHtml(<ExecutiveReport data={state.documentData} sectionStyles={state.sectionStyles} theme={state.theme} />);
+      case 'executive': return <ExecutiveReport {...props} />;
+      case 'research': return <ResearchReport {...props} />;
+      case 'security': return <SecurityAuditReport {...props} />;
+      case 'incident': return <IncidentReport {...props} />;
+      case 'business': return <BusinessReview {...props} />;
+      case 'investor': return <InvestorUpdate {...props} />;
+      case 'compliance': return <ComplianceReport {...props} />;
+      default: return <ExecutiveReport {...props} />;
     }
-  }, [state.activeTemplate, state.documentData, state.sectionStyles, state.theme]);
+  };
 
-  // Write rendered HTML to iframe
+  const renderedHtml = useMemo(() => renderToHtml(getTemplate()), [state.activeTemplate, state.documentData, state.sectionStyles, state.theme, state.variables]);
+
   useEffect(() => {
-    const iframe = iframeRef.current;
-    if (iframe && renderedHtml) {
-      const doc = iframe.contentDocument;
+    if (state.exportTab === 'preview' && iframeRef.current) {
+      const doc = iframeRef.current.contentDocument;
       if (doc) {
         doc.open();
-        doc.write(renderedHtml);
+        
+        // Inject Figma-style interactive script and styles
+        const interactiveHtml = renderedHtml.replace('</body>', `
+          <style>
+            .studio-hoverable { transition: outline 0.1s; }
+            .studio-hoverable:hover { outline: 2px solid #3B82F6 !important; outline-offset: -2px; cursor: default; }
+            .studio-selected { outline: 2px solid #10B981 !important; outline-offset: -2px; }
+          </style>
+          <script>
+            document.body.addEventListener('mouseover', (e) => {
+              const target = e.target.closest('table, p, h1, h2, h3, a');
+              if (target) target.classList.add('studio-hoverable');
+            });
+            document.body.addEventListener('mouseout', (e) => {
+              const target = e.target.closest('table, p, h1, h2, h3, a');
+              if (target) target.classList.remove('studio-hoverable');
+            });
+            document.body.addEventListener('click', (e) => {
+              e.preventDefault();
+              const target = e.target.closest('table, p, h1, h2, h3, a');
+              if (target) {
+                document.querySelectorAll('.studio-selected').forEach(el => el.classList.remove('studio-selected'));
+                target.classList.add('studio-selected');
+                
+                // Try to infer section from text content as a fallback mapping
+                const text = target.innerText.toLowerCase();
+                let inferredSection = null;
+                if (text.includes('summary')) inferredSection = 'summary';
+                else if (text.includes('metric')) inferredSection = 'metrics';
+                else if (text.includes('timeline')) inferredSection = 'timeline';
+                else if (text.includes('recommendation')) inferredSection = 'recommendations';
+                
+                window.parent.postMessage({ type: 'STUDIO_SELECT', id: inferredSection }, '*');
+              }
+            });
+          </script>
+        </body>`);
+
+        doc.write(interactiveHtml);
         doc.close();
-
-        // Auto-resize iframe to content height
-        const resizeObserver = new ResizeObserver(() => {
-          const body = doc.body;
-          if (body) {
-            iframe.style.height = `${body.scrollHeight + 32}px`;
-          }
-        });
-
-        if (doc.body) {
-          resizeObserver.observe(doc.body);
-        }
-
-        return () => resizeObserver.disconnect();
       }
     }
-  }, [renderedHtml]);
+  }, [renderedHtml, state.exportTab]);
+
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data && e.data.type === 'STUDIO_SELECT' && e.data.id) {
+        dispatch({ type: 'SET_SELECTED_SECTION', payload: e.data.id });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [dispatch]);
+
+  const activeViewport = viewports[state.viewport] || viewports['desktop'];
 
   return (
     <div style={{
       flex: 1,
       minWidth: 0,
       height: '100%',
-      overflowY: 'auto',
-      backgroundColor: '#F3F4F6',
-      padding: '32px'
+      overflow: 'auto',
+      backgroundColor: '#E5E5E5',
+      padding: '32px',
+      position: 'relative'
     }}>
-      <div style={{
-        maxWidth: '850px',
-        margin: '0 auto',
-        backgroundColor: '#FFFFFF',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        borderRadius: '8px',
-        overflow: 'hidden',
-        minHeight: '1056px', // Standard 8.5x11 aspect ratio min height
-      }}>
-        <iframe
-          ref={iframeRef}
-          style={{ width: '100%', border: 'none', display: 'block', minHeight: '1056px' }}
-          title={`${state.activeTemplate} preview`}
-          sandbox="allow-same-origin allow-popups"
-        />
-      </div>
+      {state.guidesEnabled && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundImage: 'linear-gradient(#d1d5db 1px, transparent 1px), linear-gradient(90deg, #d1d5db 1px, transparent 1px)',
+          backgroundSize: '20px 20px',
+          opacity: 0.3,
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
+      )}
+
+      {state.exportTab === 'preview' ? (
+        <div style={{
+          width: activeViewport.width,
+          minHeight: activeViewport.height,
+          margin: '0 auto',
+          backgroundColor: '#FFFFFF',
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+          borderRadius: '8px',
+          overflow: 'hidden',
+          transform: `scale(${state.zoom})`,
+          transformOrigin: 'top center',
+          transition: 'transform 0.2s ease, width 0.3s ease, min-height 0.3s ease',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <iframe
+            ref={iframeRef}
+            style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: activeViewport.height }}
+            title={`${state.activeTemplate} preview`}
+            sandbox="allow-same-origin allow-popups"
+          />
+        </div>
+      ) : (
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          backgroundColor: '#1E1E1E',
+          color: '#D4D4D4',
+          padding: '24px',
+          borderRadius: '8px',
+          fontFamily: 'monospace',
+          whiteSpace: 'pre-wrap',
+          fontSize: '13px',
+          position: 'relative',
+          zIndex: 1,
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+        }}>
+          {state.exportTab === 'html' && renderedHtml}
+          {state.exportTab === 'json' && '// renderToJson() output will be displayed here in Phase 4\n{\n  "type": "unlayer-elements-document",\n  "version": "1.0"\n}'}
+          {state.exportTab === 'markdown' && '# Markdown Output\n\n// Markdown transpiler output will go here'}
+          {state.exportTab === 'latex' && '% LaTeX Output\n\\documentclass{article}\n\\begin{document}\n\n% LaTeX transpiler output will go here\n\n\\end{document}'}
+        </div>
+      )}
     </div>
   );
 };
