@@ -161,23 +161,32 @@ export const LivePreview: React.FC = () => {
         </div>
       ) : (
         <div style={{
+          width: '100%',
           maxWidth: '1200px',
           margin: '0 auto',
           backgroundColor: '#1E1E1E',
           color: '#D4D4D4',
-          padding: '24px',
           borderRadius: '8px',
-          fontFamily: 'monospace',
-          whiteSpace: 'pre-wrap',
+          fontFamily: '"Fira Code", "Consolas", monospace',
           fontSize: '13px',
           position: 'relative',
           zIndex: 1,
           boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          overflow: 'hidden'
         }}>
-          {state.exportTab === 'html' && renderedHtml}
-          {state.exportTab === 'json' && '// renderToJson() output will be displayed here in Phase 4\n{\n  "type": "unlayer-elements-document",\n  "version": "1.0"\n}'}
-          {state.exportTab === 'markdown' && '# Markdown Output\n\n// Markdown transpiler output will go here'}
-          {state.exportTab === 'latex' && '% LaTeX Output\n\\documentclass{article}\n\\begin{document}\n\n% LaTeX transpiler output will go here\n\n\\end{document}'}
+          <div style={{ padding: '8px 16px', backgroundColor: '#2D2D2D', borderBottom: '1px solid #404040', fontSize: '12px', fontWeight: 600, color: '#A3A3A3', display: 'flex', justifyContent: 'space-between' }}>
+            <span>{state.exportTab === 'html' ? 'compiled-output.html' : state.exportTab === 'json' ? 'document-ast.json' : 'output.txt'}</span>
+            <span style={{ cursor: 'pointer' }} onClick={() => navigator.clipboard.writeText(state.exportTab === 'html' ? renderedHtml : JSON.stringify(state.documentData, null, 2))}>Copy</span>
+          </div>
+          <div style={{ padding: '24px', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }}>
+            {state.exportTab === 'html' && renderedHtml}
+            {state.exportTab === 'json' && JSON.stringify(state.documentData, null, 2)}
+            {state.exportTab === 'markdown' && '# Markdown Output\n\n// Markdown transpiler output will go here'}
+            {state.exportTab === 'latex' && '% LaTeX Output\n\\documentclass{article}\n\\begin{document}\n\n% LaTeX transpiler output will go here\n\n\\end{document}'}
+          </div>
         </div>
       )}
     </div>

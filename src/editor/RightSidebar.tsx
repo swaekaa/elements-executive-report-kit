@@ -11,11 +11,7 @@ export const RightSidebar: React.FC = () => {
   const tabs: { id: InspectorTab; label: string; icon: React.ReactNode }[] = [
     { id: 'content', label: 'Content', icon: <Settings size={14} /> },
     { id: 'style', label: 'Style', icon: <Paintbrush size={14} /> },
-    { id: 'layout', label: 'Layout', icon: <LayoutTemplate size={14} /> },
-    { id: 'typography', label: 'Typography', icon: <Type size={14} /> },
-    { id: 'data', label: 'Data', icon: <Database size={14} /> },
-    { id: 'accessibility', label: 'Accessibility', icon: <Eye size={14} /> },
-    { id: 'advanced', label: 'Advanced', icon: <Code size={14} /> }
+    { id: 'layout', label: 'Layout', icon: <LayoutTemplate size={14} /> }
   ];
 
   const handleStyleChange = (property: string, value: string) => {
@@ -102,6 +98,90 @@ export const RightSidebar: React.FC = () => {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Content Tab - Dynamic Inspector */}
+            {activeTab === 'content' && (
+              <div>
+                <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#6B7280', marginBottom: '12px', letterSpacing: '0.05em' }}>Component Properties</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* For Phase 4, we use a basic mapping of layer -> fields until AST is implemented */}
+                  {state.selectedSectionId === 'cover' && (
+                    <>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <label style={{ fontSize: '12px', color: '#374151' }}>Title</label>
+                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: (state.documentData.title || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
+                            <option value="">+ Variable</option>
+                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
+                          </select>
+                        </div>
+                        <input type="text" value={state.documentData.title || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <label style={{ fontSize: '12px', color: '#374151' }}>Subtitle</label>
+                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'subtitle', value: (state.documentData.subtitle || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
+                            <option value="">+ Variable</option>
+                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
+                          </select>
+                        </div>
+                        <input type="text" value={state.documentData.subtitle || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'subtitle', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
+                      </div>
+                    </>
+                  )}
+                  {state.selectedSectionId === 'summary' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <label style={{ fontSize: '12px', color: '#374151' }}>Executive Summary Content</label>
+                        <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'executiveSummary', value: (state.documentData.executiveSummary || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
+                          <option value="">+ Variable</option>
+                          {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
+                        </select>
+                      </div>
+                      <textarea value={state.documentData.executiveSummary || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'executiveSummary', value: e.target.value } })} rows={6} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none', resize: 'vertical' }} />
+                    </div>
+                  )}
+                  {state.selectedSectionId === 'metrics' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '12px', color: '#374151' }}>Metrics Data (JSON)</label>
+                      <textarea value={JSON.stringify(state.documentData.metrics, null, 2)} onChange={(e) => {
+                        try {
+                          const parsed = JSON.parse(e.target.value);
+                          dispatch({ type: 'UPDATE_DATA', payload: { path: 'metrics', value: parsed } });
+                        } catch(e) {}
+                      }} rows={8} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none', fontFamily: 'monospace', resize: 'vertical' }} />
+                    </div>
+                  )}
+                  {state.selectedSectionId === 'header' && (
+                    <>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <label style={{ fontSize: '12px', color: '#374151' }}>Title</label>
+                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: (state.documentData.title || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
+                            <option value="">+ Variable</option>
+                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
+                          </select>
+                        </div>
+                        <input type="text" value={state.documentData.title || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <label style={{ fontSize: '12px', color: '#374151' }}>Date</label>
+                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'date', value: (state.documentData.date || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
+                            <option value="">+ Variable</option>
+                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
+                          </select>
+                        </div>
+                        <input type="text" value={state.documentData.date || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'date', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
+                      </div>
+                    </>
+                  )}
+                  {/* Default message if no fields mapped */}
+                  {!['cover', 'summary', 'metrics', 'header'].includes(state.selectedSectionId) && (
+                    <div style={{ fontSize: '12px', color: '#9CA3AF', fontStyle: 'italic' }}>No editable content properties for this section.</div>
+                  )}
+                </div>
+              </div>
+            )}
             {/* Style Tab */}
             {activeTab === 'style' && (
               <div>
@@ -188,14 +268,6 @@ export const RightSidebar: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Placeholder for other tabs */}
-            {['content', 'typography', 'data', 'accessibility', 'advanced'].includes(activeTab) && (
-              <div style={{ textAlign: 'center', color: '#6B7280', fontSize: '12px', marginTop: '20px' }}>
-                <p>The <strong>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</strong> inspector is currently under construction.</p>
-                <p style={{ marginTop: '8px' }}>This panel will expose deep properties for the selected <code>{state.selectedSectionId}</code> layer.</p>
               </div>
             )}
           </div>
