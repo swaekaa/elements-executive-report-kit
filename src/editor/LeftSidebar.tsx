@@ -164,28 +164,66 @@ export const LeftSidebar: React.FC = () => {
         </CollapsibleSection>
 
         <CollapsibleSection title="Variables" icon={<Type size={14} />} defaultOpen={true}>
-          <div style={{ padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {Object.values(state.variables || {}).map(v => (
-              <div key={v.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <label style={{ fontSize: '11px', color: '#6B7280', fontWeight: 500 }}>{v.label}</label>
-                <input
-                  type="text"
-                  value={v.value}
-                  onChange={(e) => dispatch({ type: 'SET_VARIABLE', payload: { key: v.key, value: e.target.value } })}
-                  style={{
-                    width: '100%',
-                    padding: '4px 8px',
-                    fontSize: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '4px',
-                    outline: 'none',
-                    color: '#374151'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
-                  onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
-                />
-              </div>
-            ))}
+          <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {['company', 'report', 'author', 'theme', 'custom'].map(category => {
+              const varsInCategory = Object.values(state.variables || {}).filter(v => v.category === category);
+              if (varsInCategory.length === 0) return null;
+              
+              return (
+                <div key={category} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {category}
+                  </div>
+                  {varsInCategory.map(v => {
+                    const dataString = JSON.stringify(state.documentData || {});
+                    const bindingString = `{{${v.key}}}`;
+                    const usageCount = dataString.split(bindingString).length - 1;
+                    
+                    return (
+                      <div key={v.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <label style={{ fontSize: '11px', color: '#374151', fontWeight: 600 }}>{v.label}</label>
+                          {usageCount > 0 && (
+                            <span style={{ fontSize: '9px', background: '#DBEAFE', color: '#1D4ED8', padding: '2px 6px', borderRadius: '10px', fontWeight: 500 }} title={`Used ${usageCount} time(s)`}>
+                              {usageCount} used
+                            </span>
+                          )}
+                        </div>
+                        {v.description && <div style={{ fontSize: '10px', color: '#9CA3AF' }}>{v.description}</div>}
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {v.type === 'color' && (
+                            <input
+                              type="color"
+                              value={v.value}
+                              onChange={(e) => dispatch({ type: 'SET_VARIABLE', payload: { key: v.key, value: e.target.value } })}
+                              style={{ width: '24px', height: '24px', padding: 0, border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                            />
+                          )}
+                          <input
+                            type={v.type === 'date' ? 'date' : 'text'}
+                            value={v.value}
+                            placeholder={v.defaultValue}
+                            onChange={(e) => dispatch({ type: 'SET_VARIABLE', payload: { key: v.key, value: e.target.value } })}
+                            style={{
+                              flex: 1,
+                              padding: '4px 8px',
+                              fontSize: '12px',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: '4px',
+                              outline: 'none',
+                              color: '#374151'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
+                            onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </CollapsibleSection>
 

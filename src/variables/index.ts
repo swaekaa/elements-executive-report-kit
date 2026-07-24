@@ -8,9 +8,13 @@
  * This module has ZERO internal imports to prevent circular dependencies.
  */
 
+export type VariableType = 'string' | 'number' | 'boolean' | 'color' | 'image' | 'date';
+
 export interface Variable {
   /** Unique key, e.g. "company.name" */
   key: string;
+  /** Variable type for the UI editor */
+  type: VariableType;
   /** Human-readable label */
   label: string;
   /** Category for grouping in the explorer */
@@ -31,6 +35,7 @@ export type VariableMap = Record<string, Variable>;
 export const defaultVariables: VariableMap = {
   'company.name': {
     key: 'company.name',
+    type: 'string',
     label: 'Company Name',
     category: 'company',
     value: 'Meridian Consulting Group',
@@ -39,6 +44,7 @@ export const defaultVariables: VariableMap = {
   },
   'company.logo': {
     key: 'company.logo',
+    type: 'image',
     label: 'Company Logo URL',
     category: 'company',
     value: '',
@@ -47,6 +53,7 @@ export const defaultVariables: VariableMap = {
   },
   'company.tagline': {
     key: 'company.tagline',
+    type: 'string',
     label: 'Company Tagline',
     category: 'company',
     value: 'Strategic Innovation Partners',
@@ -54,6 +61,7 @@ export const defaultVariables: VariableMap = {
   },
   'company.website': {
     key: 'company.website',
+    type: 'string',
     label: 'Website',
     category: 'company',
     value: 'https://meridian.consulting',
@@ -61,6 +69,7 @@ export const defaultVariables: VariableMap = {
   },
   'report.title': {
     key: 'report.title',
+    type: 'string',
     label: 'Report Title',
     category: 'report',
     value: 'Q4 2024 Executive Performance Report',
@@ -68,6 +77,7 @@ export const defaultVariables: VariableMap = {
   },
   'report.subtitle': {
     key: 'report.subtitle',
+    type: 'string',
     label: 'Report Subtitle',
     category: 'report',
     value: 'Annual Strategic Assessment',
@@ -75,6 +85,7 @@ export const defaultVariables: VariableMap = {
   },
   'report.date': {
     key: 'report.date',
+    type: 'date',
     label: 'Report Date',
     category: 'report',
     value: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
@@ -82,6 +93,7 @@ export const defaultVariables: VariableMap = {
   },
   'report.version': {
     key: 'report.version',
+    type: 'string',
     label: 'Version',
     category: 'report',
     value: '1.0',
@@ -89,6 +101,7 @@ export const defaultVariables: VariableMap = {
   },
   'report.status': {
     key: 'report.status',
+    type: 'string',
     label: 'Status',
     category: 'report',
     value: 'Final',
@@ -96,6 +109,7 @@ export const defaultVariables: VariableMap = {
   },
   'author.name': {
     key: 'author.name',
+    type: 'string',
     label: 'Author Name',
     category: 'author',
     value: 'Sarah Mitchell',
@@ -103,6 +117,7 @@ export const defaultVariables: VariableMap = {
   },
   'author.title': {
     key: 'author.title',
+    type: 'string',
     label: 'Author Title',
     category: 'author',
     value: 'Chief Strategy Officer',
@@ -110,6 +125,7 @@ export const defaultVariables: VariableMap = {
   },
   'author.email': {
     key: 'author.email',
+    type: 'string',
     label: 'Author Email',
     category: 'author',
     value: 'sarah.mitchell@meridian.consulting',
@@ -117,6 +133,7 @@ export const defaultVariables: VariableMap = {
   },
   'theme.primary': {
     key: 'theme.primary',
+    type: 'color',
     label: 'Primary Color',
     category: 'theme',
     value: '#1E3A5F',
@@ -124,6 +141,7 @@ export const defaultVariables: VariableMap = {
   },
   'theme.accent': {
     key: 'theme.accent',
+    type: 'color',
     label: 'Accent Color',
     category: 'theme',
     value: '#2196F3',
