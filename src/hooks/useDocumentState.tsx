@@ -26,6 +26,7 @@ export interface ProjectState {
   activeArtifactId: string;
   
   // Studio UI State
+  activeLeftPanel: 'explorer' | 'components';
   exportTab: ExportTab;
   zoom: number;
   devConsoleOpen: boolean;
@@ -69,6 +70,7 @@ type Action =
   | { type: 'UPDATE_ARTIFACT'; payload: { id: string; changes: Partial<Artifact> } }
   
   // Studio UI Actions (Don't trigger undo history)
+  | { type: 'SET_LEFT_PANEL'; payload: 'explorer' | 'components' }
   | { type: 'SET_ACTIVE_ARTIFACT'; payload: string }
   | { type: 'SET_SELECTED_SECTION'; payload: string | null }
   | { type: 'SET_EXPORT_TAB'; payload: ExportTab }
@@ -112,6 +114,7 @@ const initialProjectState: ProjectState = {
   selectedSectionId: null,
   artifacts: defaultArtifacts,
   activeArtifactId: 'art-1',
+  activeLeftPanel: 'explorer',
   exportTab: 'preview',
   zoom: 1,
   devConsoleOpen: false,
@@ -254,6 +257,8 @@ const projectReducer = (state: ProjectState, action: Action): ProjectState => {
           a.id === action.payload.id ? { ...a, ...action.payload.changes } : a
         )
       };
+    case 'SET_LEFT_PANEL':
+      return { ...state, activeLeftPanel: action.payload, leftSidebarOpen: true };
     case 'SET_ACTIVE_ARTIFACT':
       return { ...state, activeArtifactId: action.payload };
     case 'SET_SELECTED_SECTION':

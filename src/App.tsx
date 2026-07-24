@@ -1,5 +1,9 @@
 import { ProjectProvider } from './hooks/useDocumentState';
 import { EditorLayout } from './editor/EditorLayout';
+import { registerCoreComponents } from './registry/components';
+
+// Initialize the IDE's core component registry
+registerCoreComponents();
 
 /**
  * Elements Studio Application
