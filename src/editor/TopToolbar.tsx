@@ -27,17 +27,17 @@ export const TopToolbar: React.FC = () => {
       justifyContent: 'space-between',
       padding: '0 16px',
       height: '48px',
-      backgroundColor: '#FFFFFF',
-      borderBottom: '1px solid #E5E7EB',
-      color: '#374151',
+      backgroundColor: '#0f0f0f',
+      borderBottom: '1px solid #27272a',
+      color: '#e5e7eb',
       fontSize: '13px',
       fontWeight: 500,
       userSelect: 'none'
     }}>
       {/* Left: Branding & History */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ fontWeight: 600, color: '#111827' }}>Elements Studio</div>
-        <div style={{ width: '1px', height: '24px', backgroundColor: '#E5E7EB' }} />
+        <div style={{ fontWeight: 600, color: '#f3f4f6' }}>Elements Studio</div>
+        <div style={{ width: '1px', height: '24px', backgroundColor: '#27272a' }} />
         <div style={{ display: 'flex', gap: '4px' }}>
           <button 
             onClick={() => dispatch({ type: 'UNDO' })}
@@ -47,7 +47,7 @@ export const TopToolbar: React.FC = () => {
               background: 'none', 
               border: 'none', 
               cursor: canUndo ? 'pointer' : 'not-allowed',
-              color: canUndo ? '#374151' : '#D1D5DB',
+              color: canUndo ? '#a1a1aa' : '#3f3f46',
               borderRadius: '4px'
             }}
             title="Undo (Ctrl+Z)"
@@ -62,7 +62,7 @@ export const TopToolbar: React.FC = () => {
               background: 'none', 
               border: 'none', 
               cursor: canRedo ? 'pointer' : 'not-allowed',
-              color: canRedo ? '#374151' : '#D1D5DB',
+              color: canRedo ? '#a1a1aa' : '#3f3f46',
               borderRadius: '4px'
             }}
             title="Redo (Ctrl+Y)"
@@ -70,11 +70,11 @@ export const TopToolbar: React.FC = () => {
             <Redo size={16} />
           </button>
         </div>
-        <div style={{ fontSize: '12px', color: '#9CA3AF' }}>Saved locally</div>
+        <div style={{ fontSize: '12px', color: '#71717a' }}>Saved locally</div>
       </div>
 
       {/* Center: Artifact Switcher */}
-      <div style={{ display: 'flex', backgroundColor: '#F3F4F6', padding: '4px', borderRadius: '6px', gap: '4px' }}>
+      <div style={{ display: 'flex', backgroundColor: '#18181b', padding: '4px', borderRadius: '6px', gap: '4px', border: '1px solid #27272a' }}>
         {state.artifacts?.map(artifact => (
           <button
             key={artifact.id}
@@ -85,14 +85,15 @@ export const TopToolbar: React.FC = () => {
               gap: '6px',
               padding: '6px 12px',
               border: 'none',
-              background: state.activeArtifactId === artifact.id ? '#FFFFFF' : 'transparent',
-              boxShadow: state.activeArtifactId === artifact.id ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+              background: state.activeArtifactId === artifact.id ? '#27272a' : 'transparent',
+              boxShadow: state.activeArtifactId === artifact.id ? '0 1px 2px rgba(0,0,0,0.2)' : 'none',
               borderRadius: '4px',
-              color: state.activeArtifactId === artifact.id ? '#111827' : '#6B7280',
+              color: state.activeArtifactId === artifact.id ? '#f3f4f6' : '#a1a1aa',
               fontWeight: state.activeArtifactId === artifact.id ? 600 : 500,
               cursor: 'pointer',
               fontSize: '11px',
-              letterSpacing: '0.05em'
+              letterSpacing: '0.05em',
+              transition: 'all 0.15s ease'
             }}
           >
             {getArtifactIcon(artifact.renderMode)}
@@ -114,9 +115,9 @@ export const TopToolbar: React.FC = () => {
                 gap: '6px',
                 padding: '6px 10px',
                 border: 'none',
-                background: state.exportTab === tab.id ? '#F3F4F6' : 'transparent',
+                background: state.exportTab === tab.id ? '#27272a' : 'transparent',
                 borderRadius: '4px',
-                color: state.exportTab === tab.id ? '#111827' : '#6B7280',
+                color: state.exportTab === tab.id ? '#f3f4f6' : '#a1a1aa',
                 cursor: 'pointer',
                 fontSize: '12px'
               }}
@@ -127,7 +128,7 @@ export const TopToolbar: React.FC = () => {
           ))}
         </div>
         
-        <div style={{ width: '1px', height: '24px', backgroundColor: '#E5E7EB' }} />
+        <div style={{ width: '1px', height: '24px', backgroundColor: '#27272a' }} />
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <select 
@@ -135,12 +136,13 @@ export const TopToolbar: React.FC = () => {
             onChange={(e) => dispatch({ type: 'SET_ZOOM', payload: parseFloat(e.target.value) })}
             style={{
               padding: '4px 8px',
-              border: '1px solid #E5E7EB',
+              border: '1px solid #27272a',
               borderRadius: '4px',
-              background: '#FFFFFF',
+              background: '#18181b',
               fontSize: '12px',
-              color: '#374151',
-              cursor: 'pointer'
+              color: '#e5e7eb',
+              cursor: 'pointer',
+              outline: 'none'
             }}
           >
             <option value={0.5}>50%</option>

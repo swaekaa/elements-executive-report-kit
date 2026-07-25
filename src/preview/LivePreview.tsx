@@ -122,14 +122,14 @@ export const LivePreview: React.FC = () => {
       minWidth: 0,
       height: '100%',
       overflow: 'auto',
-      backgroundColor: '#E5E5E5',
+      backgroundColor: '#1a1a1a',
       padding: '32px',
       position: 'relative'
     }}>
       {state.guidesEnabled && (
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundImage: 'linear-gradient(#d1d5db 1px, transparent 1px), linear-gradient(90deg, #d1d5db 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(#333333 1px, transparent 1px), linear-gradient(90deg, #333333 1px, transparent 1px)',
           backgroundSize: '20px 20px',
           opacity: 0.3,
           pointerEvents: 'none',

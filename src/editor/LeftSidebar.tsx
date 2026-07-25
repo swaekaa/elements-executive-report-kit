@@ -21,17 +21,17 @@ const CollapsibleSection: React.FC<{ title: string; icon: React.ReactNode; defau
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          color: '#111827',
-          fontSize: '12px',
+          color: '#e5e7eb',
+          fontSize: '11px',
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}
       >
-        <span style={{ color: '#9CA3AF', display: 'flex', alignItems: 'center' }}>
+        <span style={{ color: '#71717a', display: 'flex', alignItems: 'center' }}>
           {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6B7280' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#71717a' }}>
           {icon}
         </span>
         {title}
@@ -59,17 +59,18 @@ const TreeItem: React.FC<{
       alignItems: 'center',
       gap: '8px',
       padding: '6px 12px',
-      background: active ? '#EFF6FF' : 'transparent',
+      background: active ? '#27272a' : 'transparent',
       border: 'none',
       borderLeft: `2px solid ${active ? '#3B82F6' : 'transparent'}`,
       cursor: 'pointer',
-      color: active ? '#1D4ED8' : '#374151',
+      color: active ? '#f3f4f6' : '#a1a1aa',
       fontSize: '13px',
       textAlign: 'left',
-      borderRadius: '0 4px 4px 0'
+      borderRadius: '0 4px 4px 0',
+      transition: 'all 0.15s ease'
     }}
   >
-    {icon && <span style={{ color: active ? '#3B82F6' : '#9CA3AF' }}>{icon}</span>}
+    {icon && <span style={{ color: active ? '#3B82F6' : '#71717a' }}>{icon}</span>}
     {label}
   </button>
 );
@@ -106,15 +107,15 @@ export const LeftSidebar: React.FC = () => {
   return (
     <div style={{
       width: '280px',
-      backgroundColor: '#F9FAFB',
-      borderRight: '1px solid #E5E7EB',
+      backgroundColor: '#0f0f0f',
+      borderRight: '1px solid #27272a',
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       userSelect: 'none',
       overflowY: 'auto'
     }}>
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid #E5E7EB', fontWeight: 600, fontSize: '13px', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #27272a', fontWeight: 600, fontSize: '13px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <Folder size={16} color="#3B82F6" />
         {state.projectMetadata?.name || 'Project Explorer'}
       </div>
