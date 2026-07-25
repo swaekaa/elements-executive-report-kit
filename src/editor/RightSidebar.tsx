@@ -4,9 +4,153 @@ import { Settings, Paintbrush, LayoutTemplate, Type, Database, Eye, Code } from 
 
 type InspectorTab = 'content' | 'style' | 'layout' | 'typography' | 'data' | 'accessibility' | 'advanced';
 
+const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label: string, type?: 'text' | 'textarea' | 'json', path: string, state: any, dispatch: any }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const rawValue = path.split('.').reduce((acc, part) => acc && acc[part], state.documentData);
+  const value = rawValue || '';
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    dispatch({ type: 'UPDATE_DATA', payload: { path, value: e.target.value } });
+  };
+  
+  const handleVariable = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value) {
+      dispatch({ type: 'UPDATE_DATA', payload: { path, value: value + e.target.value } });
+      e.target.value = "";
+    }
+  };
+
+  const inputStyles = {
+    padding: '8px 12px',
+    fontSize: '13px',
+    border: '1px solid #D1D5DB',
+    borderRadius: '6px',
+    outline: 'none',
+    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    transition: 'border-color 0.15s ease',
+    minHeight: type === 'textarea' ? '120px' : '36px',
+    lineHeight: '1.5'
+  };
+
+  const displayStyles = {
+    ...inputStyles,
+    cursor: 'text',
+    backgroundColor: '#FFFFFF',
+    overflowY: 'auto' as const,
+    whiteSpace: type === 'textarea' ? 'pre-wrap' as const : 'nowrap' as const,
+    overflowX: type === 'text' ? 'auto' as const : 'hidden' as const
+  };
+
+  const renderPills = (text: string) => {
+    if (!text) return <span style={{ color: '#9CA3AF' }}>Empty</span>;
+    
+    // Split by {{...}}
+    const parts = text.split(/(\{\{.*?\}\})/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('{{') && part.endsWith('}}')) {
+        const key = part.slice(2, -2);
+        const varLabel = state.variables?.[key]?.label || key;
+        return (
+          <span 
+            key={index} 
+            style={{ 
+              display: 'inline-block',
+              backgroundColor: '#EFF6FF', 
+              color: '#1D4ED8', 
+              padding: '2px 6px', 
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: 600,
+              margin: '0 2px',
+              verticalAlign: 'middle',
+              border: '1px solid #BFDBFE'
+            }}
+          >
+            {varLabel}
+          </span>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <label style={{ fontSize: '12px', fontWeight: 500, color: '#374151' }}>{label}</label>
+        {type !== 'json' && (
+          <select 
+            onChange={handleVariable}
+            style={{
+              fontSize: '11px',
+              background: '#F3F4F6',
+              border: 'none',
+              color: '#4B5563',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              outline: 'none',
+              fontWeight: 500
+            }}
+          >
+            <option value="">+ Variable</option>
+            {Object.values(state.variables || {}).map((v: any) => (
+              <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>
+            ))}
+          </select>
+        )}
+      </div>
+      
+      {type === 'json' ? (
+        <textarea 
+          value={JSON.stringify(rawValue, null, 2)} 
+          onChange={(e) => {
+            try {
+              dispatch({ type: 'UPDATE_DATA', payload: { path, value: JSON.parse(e.target.value) } });
+            } catch(err) {}
+          }} 
+          rows={10}
+          style={{ ...inputStyles, fontFamily: 'monospace', fontSize: '12px', resize: 'vertical', backgroundColor: '#F9FAFB' }}
+          onFocus={e => e.target.style.borderColor = '#3B82F6'}
+          onBlur={e => e.target.style.borderColor = '#D1D5DB'}
+        />
+      ) : isFocused ? (
+        type === 'text' ? (
+          <input 
+            type="text" 
+            value={value} 
+            onChange={handleChange} 
+            style={{ ...inputStyles, borderColor: '#3B82F6' }}
+            autoFocus
+            onBlur={() => setIsFocused(false)}
+          />
+        ) : (
+          <textarea 
+            value={value} 
+            onChange={handleChange} 
+            style={{ ...inputStyles, resize: 'vertical', borderColor: '#3B82F6' }}
+            autoFocus
+            onBlur={() => setIsFocused(false)}
+          />
+        )
+      ) : (
+        <div 
+          onClick={() => setIsFocused(true)}
+          style={displayStyles}
+        >
+          {renderPills(value)}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const RightSidebar: React.FC = () => {
   const { state, dispatch } = useDocumentState();
-  const [activeTab, setActiveTab] = useState<InspectorTab>('style');
+  const [activeTab, setActiveTab] = useState<InspectorTab>('content');
 
   const tabs: { id: InspectorTab; label: string; icon: React.ReactNode }[] = [
     { id: 'content', label: 'Content', icon: <Settings size={14} /> },
@@ -25,28 +169,28 @@ export const RightSidebar: React.FC = () => {
     });
   };
 
-  const selectedStyles = state.selectedSectionId ? state.sectionStyles[state.selectedSectionId] || {} : {};
+  const selectedStyles = state.selectedSectionId ? (state.sectionStyles[state.selectedSectionId] || {}) : {};
 
   return (
     <div style={{
-      width: '320px',
+      width: '300px',
+      height: '100%',
       backgroundColor: '#FFFFFF',
       borderLeft: '1px solid #E5E7EB',
       display: 'flex',
       flexDirection: 'column',
-      height: '100%',
-      color: '#111827',
-      userSelect: 'none'
+      boxShadow: '-4px 0 15px rgba(0,0,0,0.02)'
     }}>
       {/* Header */}
       <div style={{
-        padding: '12px 16px',
+        padding: '16px',
         borderBottom: '1px solid #E5E7EB',
         fontWeight: 600,
         fontSize: '13px',
+        color: '#111827',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
         <span>Inspector</span>
         {state.selectedSectionId && (
@@ -102,82 +246,53 @@ export const RightSidebar: React.FC = () => {
             {activeTab === 'content' && (
               <div>
                 <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#6B7280', marginBottom: '12px', letterSpacing: '0.05em' }}>Component Properties</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {/* For Phase 4, we use a basic mapping of layer -> fields until AST is implemented */}
-                  {state.selectedSectionId === 'cover' && (
-                    <>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <label style={{ fontSize: '12px', color: '#374151' }}>Title</label>
-                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: (state.documentData.title || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
-                            <option value="">+ Variable</option>
-                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
-                          </select>
-                        </div>
-                        <input type="text" value={state.documentData.title || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <label style={{ fontSize: '12px', color: '#374151' }}>Subtitle</label>
-                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'subtitle', value: (state.documentData.subtitle || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
-                            <option value="">+ Variable</option>
-                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
-                          </select>
-                        </div>
-                        <input type="text" value={state.documentData.subtitle || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'subtitle', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
-                      </div>
-                    </>
-                  )}
-                  {state.selectedSectionId === 'summary' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <label style={{ fontSize: '12px', color: '#374151' }}>Executive Summary Content</label>
-                        <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'executiveSummary', value: (state.documentData.executiveSummary || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
-                          <option value="">+ Variable</option>
-                          {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
-                        </select>
-                      </div>
-                      <textarea value={state.documentData.executiveSummary || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'executiveSummary', value: e.target.value } })} rows={6} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none', resize: 'vertical' }} />
-                    </div>
-                  )}
-                  {state.selectedSectionId === 'metrics' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '12px', color: '#374151' }}>Metrics Data (JSON)</label>
-                      <textarea value={JSON.stringify(state.documentData.metrics, null, 2)} onChange={(e) => {
-                        try {
-                          const parsed = JSON.parse(e.target.value);
-                          dispatch({ type: 'UPDATE_DATA', payload: { path: 'metrics', value: parsed } });
-                        } catch(e) {}
-                      }} rows={8} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none', fontFamily: 'monospace', resize: 'vertical' }} />
-                    </div>
-                  )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  
                   {state.selectedSectionId === 'header' && (
                     <>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <label style={{ fontSize: '12px', color: '#374151' }}>Title</label>
-                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: (state.documentData.title || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
-                            <option value="">+ Variable</option>
-                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
-                          </select>
-                        </div>
-                        <input type="text" value={state.documentData.title || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'title', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <label style={{ fontSize: '12px', color: '#374151' }}>Date</label>
-                          <select onChange={(e) => { if(e.target.value) dispatch({ type: 'UPDATE_DATA', payload: { path: 'date', value: (state.documentData.date || '') + e.target.value } }) }} style={{ fontSize: '10px', background: 'transparent', border: 'none', color: '#3B82F6', cursor: 'pointer', outline: 'none' }}>
-                            <option value="">+ Variable</option>
-                            {Object.values(state.variables || {}).map(v => <option key={v.key} value={`{{${v.key}}}`}>{v.label}</option>)}
-                          </select>
-                        </div>
-                        <input type="text" value={state.documentData.date || ''} onChange={(e) => dispatch({ type: 'UPDATE_DATA', payload: { path: 'date', value: e.target.value } })} style={{ padding: '6px 8px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '4px', outline: 'none' }} />
-                      </div>
+                      <PropertyField label="Organization" path="organization" state={state} dispatch={dispatch} />
+                      <PropertyField label="Date" path="date" state={state} dispatch={dispatch} />
                     </>
                   )}
+
+                  {state.selectedSectionId === 'cover' && (
+                    <>
+                      <PropertyField label="Title" path="title" state={state} dispatch={dispatch} />
+                      <PropertyField label="Subtitle" path="subtitle" state={state} dispatch={dispatch} />
+                      <PropertyField label="Author" path="author" state={state} dispatch={dispatch} />
+                      <PropertyField label="Version" path="version" state={state} dispatch={dispatch} />
+                    </>
+                  )}
+
+                  {state.selectedSectionId === 'summary' && (
+                    <PropertyField label="Executive Summary" path="executiveSummary" type="textarea" state={state} dispatch={dispatch} />
+                  )}
+
+                  {state.selectedSectionId === 'metrics' && (
+                    <PropertyField label="Metrics Data (JSON)" path="metrics" type="json" state={state} dispatch={dispatch} />
+                  )}
+
+                  {state.selectedSectionId === 'timeline' && (
+                    <PropertyField label="Timeline Events (JSON)" path="timeline" type="json" state={state} dispatch={dispatch} />
+                  )}
+
+                  {state.selectedSectionId === 'tables' && (
+                    <PropertyField label="Financial Data (JSON)" path="financials" type="json" state={state} dispatch={dispatch} />
+                  )}
+
+                  {state.selectedSectionId === 'recommendations' && (
+                    <PropertyField label="Recommendations (JSON)" path="recommendations" type="json" state={state} dispatch={dispatch} />
+                  )}
+
+                  {state.selectedSectionId === 'appendix' && (
+                    <PropertyField label="Appendix Data (JSON)" path="appendix" type="json" state={state} dispatch={dispatch} />
+                  )}
+
                   {/* Default message if no fields mapped */}
-                  {!['cover', 'summary', 'metrics', 'header'].includes(state.selectedSectionId) && (
-                    <div style={{ fontSize: '12px', color: '#9CA3AF', fontStyle: 'italic' }}>No editable content properties for this section.</div>
+                  {!['header', 'cover', 'summary', 'metrics', 'timeline', 'tables', 'recommendations', 'appendix'].includes(state.selectedSectionId) && (
+                    <div style={{ fontSize: '12px', color: '#9CA3AF', fontStyle: 'italic', padding: '12px', backgroundColor: '#F9FAFB', borderRadius: '6px' }}>
+                      No editable content properties mapped for this section.
+                    </div>
                   )}
                 </div>
               </div>
