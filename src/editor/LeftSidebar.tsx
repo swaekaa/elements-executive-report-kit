@@ -21,9 +21,9 @@ const CollapsibleSection: React.FC<{ title: string; icon: React.ReactNode; defau
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          color: '#374151',
+          color: '#111827',
           fontSize: '12px',
-          fontWeight: 600,
+          fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}
@@ -145,25 +145,14 @@ export const LeftSidebar: React.FC = () => {
 
         {/* Pages Section */}
         <CollapsibleSection title="Pages" icon={<Layers size={14} />} defaultOpen={true}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {['Overview (Default)', 'Appendix A', 'Financials'].map((page, i) => (
-              <div 
-                key={page}
-                style={{
-                  padding: '6px 12px 6px 36px',
-                  fontSize: '12px',
-                  color: i === 0 ? '#3B82F6' : '#374151',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: i === 0 ? '#DBEAFE' : 'transparent',
-                  borderLeft: i === 0 ? '2px solid #3B82F6' : '2px solid transparent'
-                }}
-              >
-                {page}
-              </div>
-            ))}
-          </div>
+          {['Overview (Default)', 'Appendix A', 'Financials'].map((page, i) => (
+            <TreeItem 
+              key={page} 
+              label={page} 
+              icon={<FileText size={14} />}
+              active={i === 0}
+            />
+          ))}
         </CollapsibleSection>
 
         <CollapsibleSection title="Layers" icon={<Layers size={14} />} defaultOpen={true}>
@@ -173,6 +162,7 @@ export const LeftSidebar: React.FC = () => {
               <TreeItem 
                 key={layerId} 
                 label={layer} 
+                icon={<LayoutTemplate size={14} />}
                 active={state.selectedSectionId === layerId}
                 onClick={() => dispatch({ type: 'SET_SELECTED_SECTION', payload: layerId })}
               />
@@ -182,7 +172,7 @@ export const LeftSidebar: React.FC = () => {
 
         <CollapsibleSection title="Themes" icon={<Palette size={14} />}>
           {themes.map(theme => (
-            <TreeItem key={theme} label={theme} />
+            <TreeItem key={theme} label={theme} icon={<Palette size={14} />} />
           ))}
         </CollapsibleSection>
 
