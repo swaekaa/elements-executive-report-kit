@@ -57,3 +57,5 @@ export type { SummaryCardProps } from './SummaryCard';
 
 export { InfoGrid } from './InfoGrid';
 export type { InfoGridProps } from './InfoGrid';
+
+export { RechartsBlock } from './RechartsBlock';

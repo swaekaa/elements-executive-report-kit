@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hero, Section, MetricCardGrid, ContentBlock } from '../components';
+import { Hero, Section, MetricCardGrid, ContentBlock, Timeline, DataTable, RechartsBlock } from '../components';
 import type { Block } from './types';
 import type { Theme } from '../theme';
 import type { SectionStyles } from '../types/studio';
@@ -52,6 +52,31 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ block, theme, sect
         return (
           <MetricCardGrid
             metrics={block.data.metrics?.map((m: any) => ({ ...m, theme })) || []}
+            theme={theme}
+          />
+        );
+      case 'core/timeline':
+        return (
+          <Timeline
+            events={block.data.events || []}
+            theme={theme}
+          />
+        );
+      case 'core/chart':
+        return (
+          <RechartsBlock
+            type={block.data.chartType}
+            data={block.data.data || []}
+            theme={theme}
+          />
+        );
+      case 'core/table':
+        let rows = [];
+        try { rows = JSON.parse(block.data.rows); } catch (e) { /* ignore */ }
+        return (
+          <DataTable
+            headers={block.data.headers?.map((h: any) => h.label) || []}
+            rows={rows}
             theme={theme}
           />
         );

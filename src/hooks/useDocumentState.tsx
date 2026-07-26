@@ -264,11 +264,21 @@ const projectReducer = (state: ProjectState, action: Action): ProjectState => {
       };
     }
     case 'BLOCK_UPDATE': {
+      const updateBlockDeep = (blocks: any[], id: string, changes: any): any[] => {
+        return blocks.map(b => {
+          if (b.id === id) {
+            return { ...b, ...changes };
+          }
+          if (b.children) {
+            return { ...b, children: updateBlockDeep(b.children, id, changes) };
+          }
+          return b;
+        });
+      };
+      
       return {
         ...state,
-        blocks: state.blocks.map(b => 
-          b.id === action.payload.id ? { ...b, ...action.payload.changes } : b
-        )
+        blocks: updateBlockDeep(state.blocks, action.payload.id, action.payload.changes)
       };
     }
     case 'BLOCK_SET_FOCUS': {

@@ -1,11 +1,23 @@
 import React from 'react';
 import { useDocumentState } from '../../hooks/useDocumentState';
 import { blocksRegistry } from '../../blocks/registry';
-import { TextField, TextAreaField, SelectField } from './fields';
+import { TextField, TextAreaField, SelectField, ArrayField } from './fields';
+import type { Block } from '../../blocks/types';
+
+const findBlockDeep = (blocks: Block[], id: string): Block | undefined => {
+  for (const block of blocks) {
+    if (block.id === id) return block;
+    if (block.children) {
+      const found = findBlockDeep(block.children, id);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
 
 export const DynamicInspector: React.FC = () => {
   const { state, dispatch } = useDocumentState();
-  const focusedBlock = state.blocks.find(b => b.id === state.focusedBlockId);
+  const focusedBlock = findBlockDeep(state.blocks, state.focusedBlockId || '');
 
   if (!focusedBlock) {
     return (
@@ -79,11 +91,13 @@ export const DynamicInspector: React.FC = () => {
                   FieldComponent = <SelectField value={value} onChange={v => handleUpdate(field.key, v)} options={field.options} />;
                   break;
                 case 'array':
-                  // Temporarily rendering a message for array fields (Phase 5E will implement specialized editors)
                   FieldComponent = (
-                    <div style={{ border: '1px solid #27272a', borderRadius: '4px', padding: '12px', color: '#a1a1aa', fontSize: '12px', backgroundColor: '#18181b', fontStyle: 'italic' }}>
-                      Interactive list editor coming in Phase 5E.
-                    </div>
+                    <ArrayField 
+                      label={field.label}
+                      items={value || []}
+                      schema={field.arrayFields || []}
+                      onChange={(items) => handleUpdate(field.key, items)}
+                    />
                   );
                   break;
                 default:

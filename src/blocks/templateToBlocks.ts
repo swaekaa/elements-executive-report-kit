@@ -52,9 +52,35 @@ export function convertExecutiveDataToBlocks(data: ExecutiveReportData): Block[]
     blocks.push(metricsSection);
   }
 
-  // Note: I am intentionally stopping at metrics for now to keep the converter small
-  // while we build out the rest of the block definitions.
-  // The rest of the sections will be added as we define their blocks.
+  // 4. Timeline Section
+  const timelineSection = blocksRegistry.createInstance('core/section', {
+    id: 'section-timeline',
+    data: { title: 'Project Timeline', sectionNumber: '3' }
+  });
+  timelineSection.children = [
+    blocksRegistry.createInstance('core/timeline', { id: 'timeline-1' })
+  ];
+  blocks.push(timelineSection);
+
+  // 5. Chart Section
+  const chartSection = blocksRegistry.createInstance('core/section', {
+    id: 'section-chart',
+    data: { title: 'Financial Overview', sectionNumber: '4' }
+  });
+  chartSection.children = [
+    blocksRegistry.createInstance('core/chart', { id: 'chart-1' })
+  ];
+  blocks.push(chartSection);
+
+  // 6. Table Section
+  const tableSection = blocksRegistry.createInstance('core/section', {
+    id: 'section-table',
+    data: { title: 'Detailed Data', sectionNumber: '5' }
+  });
+  tableSection.children = [
+    blocksRegistry.createInstance('core/table', { id: 'table-1' })
+  ];
+  blocks.push(tableSection);
 
   return blocks;
 }

@@ -75,3 +75,5 @@ export const SelectField: React.FC<FieldProps<string>> = ({ value, onChange, opt
     ))}
   </select>
 );
+
+export { ArrayField } from './fields/ArrayField';

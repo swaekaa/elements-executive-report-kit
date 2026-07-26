@@ -16,11 +16,11 @@
   - [x] Build reusable field components (Text, Number, Select, etc.)
   - [x] Add Breadcrumbs and Property Search
   - [x] Wire Inspector to `focusedBlockId`
-- [ ] **Phase 5E: Specialized Editors**
-  - [ ] Build real Chart Editor (recharts)
-  - [ ] Build Timeline Editor (Notion-style)
-  - [ ] Build Metric Grid Editor
-  - [ ] Build Spreadsheet Table Editor
+- [x] **Phase 5E: Specialized Editors**
+  - [x] Build real Chart Editor (recharts)
+  - [x] Build Timeline Editor (Notion-style)
+  - [x] Build Metric Grid Editor
+  - [x] Build Spreadsheet Table Editor
 - [ ] **Phase 5F: Block Operations & Insert Menu**
   - [ ] Implement block move, duplicate, hide, lock shortcuts
   - [ ] Build searchable Insert Menu
