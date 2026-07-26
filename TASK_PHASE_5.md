@@ -21,9 +21,9 @@
   - [x] Build Timeline Editor (Notion-style)
   - [x] Build Metric Grid Editor
   - [x] Build Spreadsheet Table Editor
-- [ ] **Phase 5F: Block Operations & Insert Menu**
-  - [ ] Implement block move, duplicate, hide, lock shortcuts
-  - [ ] Build searchable Insert Menu
+- [x] **Phase 5F: Block Operations & Insert Menu**
+  - [x] Implement block move, duplicate, hide, lock shortcuts
+  - [x] Build searchable Insert Menu
 - [ ] **Phase 5D: Rich Text Editing**
   - [ ] Integrate Tiptap for rich text fields
   - [ ] Build floating inline toolbar

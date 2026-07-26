@@ -3,7 +3,7 @@ import { useDocumentState } from '../hooks/useDocumentState';
 import { 
   ChevronRight, ChevronDown, Folder, FileText, Mail, Monitor, Smartphone,
   Layers, Image as ImageIcon, Palette, Database, LayoutTemplate, Type,
-  EyeOff, Lock
+  EyeOff, Lock, Trash2, Copy, ArrowUp, ArrowDown, Eye, Plus
 } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import type { TemplateId, ViewportMode, RenderMode } from '../types/studio';
@@ -86,6 +86,7 @@ const BlockTreeItem: React.FC<{
   dispatch: any;
 }> = ({ block, level, state, dispatch }) => {
   const [isExpanded, setIsExpanded] = useState(!block.collapsed);
+  const [isHovered, setIsHovered] = useState(false);
   const def = blocksRegistry.get(block.type);
   const IconComponent = (def?.icon && (Icons as any)[def.icon]) ? (Icons as any)[def.icon] : LayoutTemplate;
   const hasChildren = block.children && block.children.length > 0;
@@ -111,12 +112,14 @@ const BlockTreeItem: React.FC<{
           opacity: block.hidden ? 0.5 : 1
         }}
         onMouseEnter={e => {
+          setIsHovered(true);
           if (!isActive) {
             e.currentTarget.style.background = '#18181b';
             e.currentTarget.style.color = '#e5e7eb';
           }
         }}
         onMouseLeave={e => {
+          setIsHovered(false);
           if (!isActive) {
             e.currentTarget.style.background = 'transparent';
             e.currentTarget.style.color = '#a1a1aa';
@@ -146,10 +149,50 @@ const BlockTreeItem: React.FC<{
           flex: 1,
           textDecoration: block.hidden ? 'line-through' : 'none'
         }}>
-          {block.label}
+          {block.label || def?.name || 'Block'}
         </span>
-        {block.locked && <Lock size={12} color="#71717a" />}
-        {block.hidden && <EyeOff size={12} color="#71717a" />}
+        
+        {/* Block Operations - Visible on Hover or Active */}
+        <div style={{ display: (isHovered || isActive) ? 'flex' : 'none', alignItems: 'center', gap: '4px' }}>
+          <button 
+            onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_MOVE', payload: { id: block.id, direction: -1 } }); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            title="Move Up"
+          >
+            <ArrowUp size={12} />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_MOVE', payload: { id: block.id, direction: 1 } }); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            title="Move Down"
+          >
+            <ArrowDown size={12} />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_DUPLICATE', payload: { id: block.id } }); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            title="Duplicate"
+          >
+            <Copy size={12} />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_UPDATE', payload: { id: block.id, changes: { hidden: !block.hidden } } }); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            title={block.hidden ? "Show" : "Hide"}
+          >
+            {block.hidden ? <Eye size={12} /> : <EyeOff size={12} />}
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_REMOVE', payload: { id: block.id } }); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#ef4444' }}
+            title="Delete"
+          >
+            <Trash2 size={12} />
+          </button>
+        </div>
+
+        {(!isHovered && !isActive) && block.locked && <Lock size={12} color="#71717a" />}
+        {(!isHovered && !isActive) && block.hidden && <EyeOff size={12} color="#71717a" />}
       </div>
       
       {isExpanded && hasChildren && (
@@ -163,8 +206,110 @@ const BlockTreeItem: React.FC<{
   );
 };
 
+const InsertBlockMenu: React.FC<{ dispatch: any; parentId: string | null; level: number }> = ({ dispatch, parentId, level }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const allBlocks = blocksRegistry.getAll();
+  const filteredBlocks = allBlocks.filter(b => b.name.toLowerCase().includes(search.toLowerCase()));
+
+  const handleAdd = (type: string) => {
+    const newBlock = blocksRegistry.createInstance(type, {});
+    dispatch({ type: 'BLOCK_ADD', payload: { parentId, block: newBlock } });
+    setIsOpen(false);
+    setSearch('');
+  };
+
+  return (
+    <div style={{ padding: `4px 16px 4px ${16 + level * 12}px`, position: 'relative' }}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          display: 'flex', alignItems: 'center', gap: '6px',
+          padding: '6px', background: 'transparent', border: '1px dashed #3f3f46',
+          borderRadius: '4px', color: '#a1a1aa', fontSize: '11px', cursor: 'pointer',
+          transition: 'all 0.15s ease'
+        }}
+        onMouseOver={e => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.color = '#3B82F6'; }}
+        onMouseOut={e => { e.currentTarget.style.borderColor = '#3f3f46'; e.currentTarget.style.color = '#a1a1aa'; }}
+      >
+        <Plus size={12} /> Add Block
+      </button>
+
+      {isOpen && (
+        <div style={{
+          position: 'absolute', top: '100%', left: '16px', right: '16px', zIndex: 50,
+          background: '#18181b', border: '1px solid #27272a', borderRadius: '6px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)', padding: '8px', marginTop: '4px'
+        }}>
+          <input 
+            autoFocus
+            type="text"
+            placeholder="Search blocks..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%', padding: '6px', background: '#0f0f0f', border: '1px solid #27272a',
+              borderRadius: '4px', color: '#e5e7eb', fontSize: '11px', marginBottom: '8px', outline: 'none'
+            }}
+          />
+          <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {filteredBlocks.map(b => (
+              <button
+                key={b.type}
+                onClick={() => handleAdd(b.type)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px',
+                  background: 'transparent', border: 'none', color: '#e5e7eb', fontSize: '11px',
+                  cursor: 'pointer', textAlign: 'left', borderRadius: '4px'
+                }}
+                onMouseOver={e => e.currentTarget.style.background = '#27272a'}
+                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+              >
+                {(b.icon && (Icons as any)[b.icon]) ? React.createElement((Icons as any)[b.icon], { size: 14, color: '#a1a1aa' }) : <LayoutTemplate size={14} color="#a1a1aa" />}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontWeight: 500 }}>{b.name}</span>
+                  <span style={{ fontSize: '9px', color: '#71717a' }}>{b.category}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const LeftSidebar: React.FC = () => {
   const { state, dispatch } = useDocumentState();
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger if focus is on the body, not inside an input field
+      if (state.focusedBlockId && (e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          dispatch({ type: 'BLOCK_REMOVE', payload: { id: state.focusedBlockId } });
+        }
+        if (e.ctrlKey || e.metaKey) {
+          if (e.key === 'd') {
+            e.preventDefault();
+            dispatch({ type: 'BLOCK_DUPLICATE', payload: { id: state.focusedBlockId } });
+          }
+          if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            dispatch({ type: 'BLOCK_MOVE', payload: { id: state.focusedBlockId, direction: -1 } });
+          }
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            dispatch({ type: 'BLOCK_MOVE', payload: { id: state.focusedBlockId, direction: 1 } });
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [state.focusedBlockId, dispatch]);
 
   const templates: { id: TemplateId; label: string }[] = [
     { id: 'executive', label: 'Executive Report' },
@@ -248,6 +393,7 @@ export const LeftSidebar: React.FC = () => {
           {state.blocks?.map(block => (
             <BlockTreeItem key={block.id} block={block} level={0} state={state} dispatch={dispatch} />
           ))}
+          <InsertBlockMenu dispatch={dispatch} parentId={null} level={0} />
         </CollapsibleSection>
 
         <CollapsibleSection title="Themes" icon={<Palette size={14} />}>

@@ -250,18 +250,91 @@ const projectReducer = (state: ProjectState, action: Action): ProjectState => {
       };
     }
     case 'BLOCK_ADD': {
-      // Very simplified for Phase 5A — just pushes to the root array for now
-      return {
-        ...state,
-        blocks: [...state.blocks, action.payload.block]
+      const { parentId, index, block } = action.payload;
+      
+      if (!parentId) {
+        // Add to root
+        const newBlocks = [...state.blocks];
+        if (index !== undefined) {
+          newBlocks.splice(index, 0, block);
+        } else {
+          newBlocks.push(block);
+        }
+        return { ...state, blocks: newBlocks };
+      }
+
+      // Add to specific parent
+      const addDeep = (blocks: any[]): any[] => {
+        return blocks.map(b => {
+          if (b.id === parentId) {
+            const newChildren = [...(b.children || [])];
+            if (index !== undefined) {
+              newChildren.splice(index, 0, block);
+            } else {
+              newChildren.push(block);
+            }
+            return { ...b, children: newChildren };
+          }
+          if (b.children) {
+            return { ...b, children: addDeep(b.children) };
+          }
+          return b;
+        });
       };
+      return { ...state, blocks: addDeep(state.blocks) };
     }
+    
     case 'BLOCK_REMOVE': {
+      const removeDeep = (blocks: any[], id: string): any[] => {
+        return blocks.filter(b => b.id !== id).map(b => {
+          if (b.children) {
+            return { ...b, children: removeDeep(b.children, id) };
+          }
+          return b;
+        });
+      };
       return {
         ...state,
-        blocks: state.blocks.filter(b => b.id !== action.payload.id),
+        blocks: removeDeep(state.blocks, action.payload.id),
         focusedBlockId: state.focusedBlockId === action.payload.id ? null : state.focusedBlockId
       };
+    }
+    
+    case 'BLOCK_DUPLICATE': {
+      const duplicateDeep = (blocks: any[], id: string): any[] => {
+        const result: any[] = [];
+        for (const b of blocks) {
+          result.push({ ...b, children: b.children ? duplicateDeep(b.children, id) : undefined });
+          if (b.id === id) {
+            // Found it, add duplicate right after
+            const clone = JSON.parse(JSON.stringify(b));
+            clone.id = `${clone.type.replace('/', '-')}-${Date.now()}`;
+            // If it has children, we need to regenerate their IDs too to avoid duplicates, but for phase 5F it's a start
+            result.push(clone);
+          }
+        }
+        return result;
+      };
+      return { ...state, blocks: duplicateDeep(state.blocks, action.payload.id) };
+    }
+    
+    case 'BLOCK_MOVE': {
+      const { id, direction } = action.payload; // direction: -1 (up) or 1 (down)
+      const moveDeep = (blocks: any[]): any[] => {
+        const index = blocks.findIndex(b => b.id === id);
+        if (index !== -1) {
+          if ((direction === -1 && index > 0) || (direction === 1 && index < blocks.length - 1)) {
+            const newBlocks = [...blocks];
+            const temp = newBlocks[index];
+            newBlocks[index] = newBlocks[index + direction];
+            newBlocks[index + direction] = temp;
+            return newBlocks;
+          }
+          return blocks; // Cannot move
+        }
+        return blocks.map(b => b.children ? { ...b, children: moveDeep(b.children) } : b);
+      };
+      return { ...state, blocks: moveDeep(state.blocks) };
     }
     case 'BLOCK_UPDATE': {
       const updateBlockDeep = (blocks: any[], id: string, changes: any): any[] => {
