@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDocumentState } from '../../hooks/useDocumentState';
 import { blocksRegistry } from '../../blocks/registry';
-import { TextField, TextAreaField, SelectField, ArrayField } from './fields';
+import { TextField, TextAreaField, SelectField, ArrayField, RichTextField } from './fields';
 import type { Block } from '../../blocks/types';
 
 const findBlockDeep = (blocks: Block[], id: string): Block | undefined => {
@@ -81,8 +81,10 @@ export const DynamicInspector: React.FC = () => {
               let FieldComponent: React.ReactNode = null;
               switch (field.type) {
                 case 'text':
-                case 'richtext': // Fallback to text area for now until Phase 5D
                   FieldComponent = <TextField value={value} onChange={v => handleUpdate(field.key, v)} placeholder={field.placeholder} />;
+                  break;
+                case 'richtext':
+                  FieldComponent = <RichTextField value={value} onChange={v => handleUpdate(field.key, v)} placeholder={field.placeholder} />;
                   break;
                 case 'textarea':
                   FieldComponent = <TextAreaField value={value} onChange={v => handleUpdate(field.key, v)} placeholder={field.placeholder} />;

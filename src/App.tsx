@@ -1,3 +1,4 @@
+import { ErrorBoundary } from './ErrorBoundary';
 import { ProjectProvider } from './hooks/useDocumentState';
 import { EditorLayout } from './editor/EditorLayout';
 import { registerCoreComponents } from './registry/components';
@@ -11,9 +12,11 @@ registerCoreComponents();
  */
 function App() {
   return (
-    <ProjectProvider>
-      <EditorLayout />
-    </ProjectProvider>
+    <ErrorBoundary>
+      <ProjectProvider>
+        <EditorLayout />
+      </ProjectProvider>
+    </ErrorBoundary>
   );
 }
 

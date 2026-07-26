@@ -24,6 +24,6 @@
 - [x] **Phase 5F: Block Operations & Insert Menu**
   - [x] Implement block move, duplicate, hide, lock shortcuts
   - [x] Build searchable Insert Menu
-- [ ] **Phase 5D: Rich Text Editing**
-  - [ ] Integrate Tiptap for rich text fields
-  - [ ] Build floating inline toolbar
+- [x] **Phase 5D: Rich Text Editing**
+  - [x] Integrate Tiptap for rich text fields
+  - [x] Build floating inline toolbar

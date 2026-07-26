@@ -1,4 +1,4 @@
-import { Row, Column, Paragraph } from '@unlayer/react-elements';
+import { Row, Column, Html } from '@unlayer/react-elements';
 import type { Theme } from '../theme';
 
 export interface ContentBlockProps {
@@ -16,12 +16,13 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({ children, theme }) =
   return (
     <Row backgroundColor={t.colors.background} padding="4px 0">
       <Column>
-        <Paragraph
-          fontSize={t.typography.fontSize.base}
-          color={t.colors.textSecondary}
-        >
-          {children}
-        </Paragraph>
+        <Html
+          content={`
+            <div style="font-family: ${t.typography.fontFamily}; font-size: ${t.typography.fontSize.base}; color: ${t.colors.textSecondary}; line-height: 1.6;">
+              ${children}
+            </div>
+          `}
+        />
       </Column>
     </Row>
   );
