@@ -11,11 +11,11 @@
   - [x] Implement robust hover and click detection in preview iframe
   - [x] Add auto-navigation (click in preview → selects block in sidebar/inspector)
   - [x] Wire double-click events for inline editing focus
-- [ ] **Phase 5B: Dynamic Inspector (Schema-Driven)**
-  - [ ] Implement `DynamicInspector` engine
-  - [ ] Build reusable field components (Text, Number, Select, etc.)
-  - [ ] Add Breadcrumbs and Property Search
-  - [ ] Wire Inspector to `focusedBlockId`
+- [x] **Phase 5B: Dynamic Inspector (Schema-Driven)**
+  - [x] Implement `DynamicInspector` engine
+  - [x] Build reusable field components (Text, Number, Select, etc.)
+  - [x] Add Breadcrumbs and Property Search
+  - [x] Wire Inspector to `focusedBlockId`
 - [ ] **Phase 5E: Specialized Editors**
   - [ ] Build real Chart Editor (recharts)
   - [ ] Build Timeline Editor (Notion-style)

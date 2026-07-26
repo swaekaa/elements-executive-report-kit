@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
+import { DynamicInspector } from './inspector/DynamicInspector';
 import { Settings, Paintbrush, LayoutTemplate, Type, Database, Eye, Code } from 'lucide-react';
 
 type InspectorTab = 'content' | 'style' | 'layout' | 'typography' | 'data' | 'accessibility' | 'advanced';
@@ -341,99 +342,16 @@ export const RightSidebar: React.FC = () => {
 
       {/* Content Area */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-        {!state.selectedSectionId ? (
+        {!state.focusedBlockId ? (
           <div style={{ textAlign: 'center', color: '#71717a', fontSize: '13px', marginTop: '40px' }}>
             <Settings size={32} style={{ opacity: 0.5, marginBottom: '12px' }} />
-            <p>Select a layer to inspect properties.</p>
+            <p>Select a block to inspect properties.</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Content Tab - Dynamic Inspector */}
             {activeTab === 'content' && (
-              <div>
-                <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#6B7280', marginBottom: '12px', letterSpacing: '0.05em' }}>Component Properties</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  
-                  {state.selectedSectionId === 'header' && (
-                    <>
-                      <PropertyField label="Organization" path="organization" state={state} dispatch={dispatch} />
-                      <PropertyField label="Date" path="date" state={state} dispatch={dispatch} />
-                    </>
-                  )}
-
-                  {state.selectedSectionId === 'cover' && (
-                    <>
-                      <PropertyField label="Title" path="title" state={state} dispatch={dispatch} />
-                      <PropertyField label="Subtitle" path="subtitle" state={state} dispatch={dispatch} />
-                      <PropertyField label="Author" path="author" state={state} dispatch={dispatch} />
-                      <PropertyField label="Version" path="version" state={state} dispatch={dispatch} />
-                    </>
-                  )}
-
-                  {state.selectedSectionId === 'summary' && (
-                    <PropertyField label="Executive Summary" path="executiveSummary" type="textarea" state={state} dispatch={dispatch} />
-                  )}
-
-                  {state.selectedSectionId === 'metrics' && (
-                    <ArrayBuilder 
-                      label="Metrics" 
-                      path="metrics" 
-                      fields={[
-                        { key: 'label', label: 'Label', type: 'text' },
-                        { key: 'value', label: 'Value', type: 'text' },
-                        { key: 'change', label: 'Change', type: 'text' },
-                        { key: 'changeType', label: 'Change Type (positive/negative)', type: 'text' }
-                      ]} 
-                      state={state} 
-                      dispatch={dispatch} 
-                    />
-                  )}
-
-                  {state.selectedSectionId === 'timeline' && (
-                    <ArrayBuilder 
-                      label="Timeline Events" 
-                      path="timeline" 
-                      fields={[
-                        { key: 'date', label: 'Date / Time', type: 'text' },
-                        { key: 'title', label: 'Event Title', type: 'text' },
-                        { key: 'description', label: 'What Happened', type: 'textarea' }
-                      ]} 
-                      state={state} 
-                      dispatch={dispatch} 
-                    />
-                  )}
-
-                  {state.selectedSectionId === 'tables' && (
-                    <PropertyField label="Financial Data (JSON)" path="financials" type="json" state={state} dispatch={dispatch} />
-                  )}
-
-                  {state.selectedSectionId === 'recommendations' && (
-                    <ArrayBuilder 
-                      label="Recommendations" 
-                      path="recommendations" 
-                      fields={[
-                        { key: 'title', label: 'Title', type: 'text' },
-                        { key: 'priority', label: 'Priority', type: 'text' },
-                        { key: 'category', label: 'Category', type: 'text' },
-                        { key: 'description', label: 'Description', type: 'textarea' }
-                      ]} 
-                      state={state} 
-                      dispatch={dispatch} 
-                    />
-                  )}
-
-                  {state.selectedSectionId === 'appendix' && (
-                    <PropertyField label="Appendix Data (JSON)" path="appendix" type="json" state={state} dispatch={dispatch} />
-                  )}
-
-                  {/* Default message if no fields mapped */}
-                  {!['header', 'cover', 'summary', 'metrics', 'timeline', 'tables', 'recommendations', 'appendix'].includes(state.selectedSectionId) && (
-                    <div style={{ fontSize: '12px', color: '#9CA3AF', fontStyle: 'italic', padding: '12px', backgroundColor: '#F9FAFB', borderRadius: '6px' }}>
-                      No editable content properties mapped for this section.
-                    </div>
-                  )}
-                </div>
-              </div>
+              <DynamicInspector />
             )}
             {/* Style Tab */}
             {activeTab === 'style' && (
