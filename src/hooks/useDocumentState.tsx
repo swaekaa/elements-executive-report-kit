@@ -8,9 +8,11 @@ import { incidentReportData, businessReviewData, investorUpdateData, complianceR
 import { defaultVariables } from '../variables';
 import type { VariableMap } from '../variables';
 
-// Re-export from the shared types module (which has no internal imports)
-export type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
 import type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
+export type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
+import '../blocks'; // Ensure blocks are registered before useDocumentState evaluates
+import type { Block } from '../blocks';
+import { convertExecutiveDataToBlocks } from '../blocks/templateToBlocks';
 
 export interface ProjectState {
   projectMetadata: ProjectMetadata;
@@ -20,6 +22,11 @@ export interface ProjectState {
   theme: Theme;
   sectionStyles: SectionStyles;
   selectedSectionId: string | null;
+  
+  // Block-Based Document Model
+  blocks: Block[];
+  focusedBlockId: string | null;
+  focusedFieldKey: string | null;
   
   // First-Class Artifacts
   artifacts: Artifact[];
@@ -60,6 +67,13 @@ type Action =
   | { type: 'ARRAY_REMOVE'; payload: { path: string; index: number } }
   | { type: 'ARRAY_REORDER'; payload: { path: string; startIndex: number; endIndex: number } }
   | { type: 'ARRAY_DUPLICATE'; payload: { path: string; index: number } }
+  
+  // Block Actions (New Architecture)
+  | { type: 'BLOCK_ADD'; payload: { block: Block; parentId?: string; index?: number } }
+  | { type: 'BLOCK_REMOVE'; payload: { id: string } }
+  | { type: 'BLOCK_UPDATE'; payload: { id: string; changes: Partial<Block> } }
+  | { type: 'BLOCK_SET_FOCUS'; payload: { blockId: string | null } }
+  | { type: 'BLOCK_SET_FIELD_FOCUS'; payload: { blockId: string; fieldKey: string | null } }
   
   // Variable Actions (undoable)
   | { type: 'SET_VARIABLE'; payload: { key: string; value: string } }
@@ -109,6 +123,9 @@ const initialProjectState: ProjectState = {
   },
   activeTemplate: 'executive',
   documentData: getInitialData('executive'),
+  blocks: convertExecutiveDataToBlocks(getInitialData('executive')),
+  focusedBlockId: null,
+  focusedFieldKey: null,
   theme: lightTheme,
   sectionStyles: {},
   selectedSectionId: null,
@@ -161,6 +178,7 @@ const isUndoable = (actionType: string) => {
   return [
     'SET_TEMPLATE', 'UPDATE_DATA', 'UPDATE_THEME', 'UPDATE_SECTION_STYLE',
     'ARRAY_ADD', 'ARRAY_REMOVE', 'ARRAY_REORDER', 'ARRAY_DUPLICATE',
+    'BLOCK_ADD', 'BLOCK_REMOVE', 'BLOCK_UPDATE',
     'SET_VARIABLE', 'ADD_ARTIFACT', 'REMOVE_ARTIFACT', 'UPDATE_ARTIFACT'
   ].includes(actionType);
 };
@@ -229,6 +247,44 @@ const projectReducer = (state: ProjectState, action: Action): ProjectState => {
       return {
         ...state,
         documentData: setDeep(state.documentData, action.payload.path, arr)
+      };
+    }
+    case 'BLOCK_ADD': {
+      // Very simplified for Phase 5A — just pushes to the root array for now
+      return {
+        ...state,
+        blocks: [...state.blocks, action.payload.block]
+      };
+    }
+    case 'BLOCK_REMOVE': {
+      return {
+        ...state,
+        blocks: state.blocks.filter(b => b.id !== action.payload.id),
+        focusedBlockId: state.focusedBlockId === action.payload.id ? null : state.focusedBlockId
+      };
+    }
+    case 'BLOCK_UPDATE': {
+      return {
+        ...state,
+        blocks: state.blocks.map(b => 
+          b.id === action.payload.id ? { ...b, ...action.payload.changes } : b
+        )
+      };
+    }
+    case 'BLOCK_SET_FOCUS': {
+      return {
+        ...state,
+        focusedBlockId: action.payload.blockId,
+        focusedFieldKey: null,
+        rightSidebarOpen: true // Auto-open inspector
+      };
+    }
+    case 'BLOCK_SET_FIELD_FOCUS': {
+      return {
+        ...state,
+        focusedBlockId: action.payload.blockId,
+        focusedFieldKey: action.payload.fieldKey,
+        rightSidebarOpen: true
       };
     }
     case 'SET_VARIABLE': {

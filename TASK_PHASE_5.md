@@ -1,5 +1,29 @@
-# Phase 5: Monaco Editor Integration (JSON & HTML Tabs)
+# Phase 5 Tasks
 
-- `[x]` Build the JSON Explorer tab to view the live `documentData` object
-- `[x]` Build the HTML Export tab to view the live raw Elements HTML
-- `[x]` Ensure code blocks are syntax-highlighted and readonly
+- [x] **Phase 5A: Block-Based Document Model & Auto-Generated Layer Tree**
+  - [x] Setup block types and registry
+  - [x] Define initial block schemas (Hero, Section, Paragraph, Metric Grid)
+  - [x] Create converter for backward compatibility (`templateToBlocks.ts`)
+  - [x] Update state management to support blocks
+  - [x] Refactor Left Sidebar to auto-generate the tree from blocks
+- [ ] **Phase 5C: Interactive Preview (Click-to-Edit)**
+  - [ ] Inject `data-block-id` attributes into templates
+  - [ ] Implement robust hover and click detection in preview iframe
+  - [ ] Add auto-navigation (click in preview → selects block in sidebar/inspector)
+  - [ ] Wire double-click events for inline editing focus
+- [ ] **Phase 5B: Dynamic Inspector (Schema-Driven)**
+  - [ ] Implement `DynamicInspector` engine
+  - [ ] Build reusable field components (Text, Number, Select, etc.)
+  - [ ] Add Breadcrumbs and Property Search
+  - [ ] Wire Inspector to `focusedBlockId`
+- [ ] **Phase 5E: Specialized Editors**
+  - [ ] Build real Chart Editor (recharts)
+  - [ ] Build Timeline Editor (Notion-style)
+  - [ ] Build Metric Grid Editor
+  - [ ] Build Spreadsheet Table Editor
+- [ ] **Phase 5F: Block Operations & Insert Menu**
+  - [ ] Implement block move, duplicate, hide, lock shortcuts
+  - [ ] Build searchable Insert Menu
+- [ ] **Phase 5D: Rich Text Editing**
+  - [ ] Integrate Tiptap for rich text fields
+  - [ ] Build floating inline toolbar

@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { 
   ChevronRight, ChevronDown, Folder, FileText, Mail, Monitor, Smartphone,
-  Layers, Image as ImageIcon, Palette, Database, LayoutTemplate, Type
+  Layers, Image as ImageIcon, Palette, Database, LayoutTemplate, Type,
+  EyeOff, Lock
 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import type { TemplateId, ViewportMode, RenderMode } from '../types/studio';
+import { blocksRegistry } from '../blocks/registry';
+import type { Block } from '../blocks/types';
 
 const CollapsibleSection: React.FC<{ title: string; icon: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }> = ({ title, icon, defaultOpen = false, children }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -74,6 +78,90 @@ const TreeItem: React.FC<{
     {label}
   </button>
 );
+
+const BlockTreeItem: React.FC<{
+  block: Block;
+  level: number;
+  state: any;
+  dispatch: any;
+}> = ({ block, level, state, dispatch }) => {
+  const [isExpanded, setIsExpanded] = useState(!block.collapsed);
+  const def = blocksRegistry.get(block.type);
+  const IconComponent = (def?.icon && (Icons as any)[def.icon]) ? (Icons as any)[def.icon] : LayoutTemplate;
+  const hasChildren = block.children && block.children.length > 0;
+  
+  const isActive = state.focusedBlockId === block.id;
+
+  return (
+    <div>
+      <div 
+        onClick={() => dispatch({ type: 'BLOCK_SET_FOCUS', payload: { blockId: block.id } })}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: `6px 16px 6px ${16 + level * 12}px`,
+          cursor: 'pointer',
+          color: isActive ? '#FFFFFF' : '#a1a1aa',
+          background: isActive ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+          borderLeft: isActive ? '2px solid #3B82F6' : '2px solid transparent',
+          fontSize: '13px',
+          transition: 'all 0.15s ease',
+          userSelect: 'none',
+          opacity: block.hidden ? 0.5 : 1
+        }}
+        onMouseEnter={e => {
+          if (!isActive) {
+            e.currentTarget.style.background = '#18181b';
+            e.currentTarget.style.color = '#e5e7eb';
+          }
+        }}
+        onMouseLeave={e => {
+          if (!isActive) {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = '#a1a1aa';
+          }
+        }}
+      >
+        <div 
+          style={{ width: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: hasChildren ? 'pointer' : 'default' }}
+          onClick={(e) => {
+            if (hasChildren) {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }
+          }}
+        >
+          {hasChildren ? (
+            isExpanded ? <ChevronDown size={14} color={isActive ? '#FFFFFF' : '#71717a'} /> : <ChevronRight size={14} color={isActive ? '#FFFFFF' : '#71717a'} />
+          ) : (
+            <div style={{ width: '14px' }} />
+          )}
+        </div>
+        <IconComponent size={14} color={isActive ? '#3B82F6' : '#71717a'} />
+        <span style={{ 
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          flex: 1,
+          textDecoration: block.hidden ? 'line-through' : 'none'
+        }}>
+          {block.label}
+        </span>
+        {block.locked && <Lock size={12} color="#71717a" />}
+        {block.hidden && <EyeOff size={12} color="#71717a" />}
+      </div>
+      
+      {isExpanded && hasChildren && (
+        <div>
+          {block.children!.map(child => (
+            <BlockTreeItem key={child.id} block={child} level={level + 1} state={state} dispatch={dispatch} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const LeftSidebar: React.FC = () => {
   const { state, dispatch } = useDocumentState();
@@ -156,19 +244,10 @@ export const LeftSidebar: React.FC = () => {
           ))}
         </CollapsibleSection>
 
-        <CollapsibleSection title="Layers" icon={<Layers size={14} />} defaultOpen={true}>
-          {layers.map(layer => {
-            const layerId = layer.toLowerCase();
-            return (
-              <TreeItem 
-                key={layerId} 
-                label={layer} 
-                icon={<LayoutTemplate size={14} />}
-                active={state.selectedSectionId === layerId}
-                onClick={() => dispatch({ type: 'SET_SELECTED_SECTION', payload: layerId })}
-              />
-            );
-          })}
+        <CollapsibleSection title="Blocks" icon={<Layers size={14} />} defaultOpen={true}>
+          {state.blocks?.map(block => (
+            <BlockTreeItem key={block.id} block={block} level={0} state={state} dispatch={dispatch} />
+          ))}
         </CollapsibleSection>
 
         <CollapsibleSection title="Themes" icon={<Palette size={14} />}>
