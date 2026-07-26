@@ -17,7 +17,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({ children, theme }) =
     <Row backgroundColor={t.colors.background} padding="4px 0">
       <Column>
         <Html
-          content={`
+          html={`
             <div style="font-family: ${t.typography.fontFamily}; font-size: ${t.typography.fontSize.base}; color: ${t.colors.textSecondary}; line-height: 1.6;">
               ${children}
             </div>

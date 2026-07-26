@@ -484,7 +484,7 @@ export const useDocumentState = useProjectState;
 export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [historyState, dispatch] = useReducer(historyReducer, initialState, (initial) => {
     try {
-      const saved = localStorage.getItem('elements-studio-state-v3');
+      const saved = localStorage.getItem('elements-studio-state-v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         // Safely merge present state with initial to avoid undefined properties
@@ -493,6 +493,11 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
           if (!parsed.present.sectionStyles) parsed.present.sectionStyles = {};
           if (!parsed.present.artifacts) parsed.present.artifacts = initial.present.artifacts;
           if (!parsed.present.activeArtifactId) parsed.present.activeArtifactId = initial.present.activeArtifactId;
+          
+          // Phase 5 Migration: Generate blocks if they don't exist
+          if (!parsed.present.blocks || parsed.present.blocks.length === 0) {
+             parsed.present.blocks = initial.present.blocks;
+          }
         }
         return parsed;
       }
@@ -503,7 +508,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
   });
 
   useEffect(() => {
-    localStorage.setItem('elements-studio-state-v3', JSON.stringify(historyState));
+    localStorage.setItem('elements-studio-state-v5', JSON.stringify(historyState));
   }, [historyState]);
 
   // Global Keyboard Shortcuts

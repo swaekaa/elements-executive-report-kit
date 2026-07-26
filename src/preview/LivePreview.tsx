@@ -43,16 +43,37 @@ export const LivePreview: React.FC = () => {
     // Resolve variables in all blocks (in a real app, this should be a recursive deep resolve on blocks)
     // For now we just pass the blocks down.
     
-    return (
-      <Document>
-        {state.blocks?.map(block => (
-          <BlockRenderer key={block.id} block={block} theme={state.theme} sectionStyles={state.sectionStyles} />
-        ))}
-      </Document>
-    );
+    // The new block-based architecture (Phase 5) is only implemented for the Executive template.
+    if (state.activeTemplate === 'executive') {
+      return (
+        <Document>
+          {state.blocks?.map(block => (
+            <BlockRenderer key={block.id} block={block} theme={state.theme} sectionStyles={state.sectionStyles} />
+          ))}
+        </Document>
+      );
+    }
+    
+    // Fallback to legacy static templates
+    switch (state.activeTemplate) {
+      case 'research': return <ResearchReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+      case 'security': return <SecurityAuditReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+      case 'incident': return <IncidentReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+      case 'business': return <BusinessReview data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+      case 'investor': return <InvestorUpdate data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+      case 'compliance': return <ComplianceReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+      default: return <ExecutiveReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
+    }
   };
 
-  const renderedHtml = useMemo(() => renderToHtml(getTemplate()), [state.blocks, state.sectionStyles, state.theme, state.variables]);
+  const renderedHtml = useMemo(() => {
+    try {
+      return renderToHtml(getTemplate());
+    } catch (e: any) {
+      console.error('Render error:', e);
+      return `<html><body style="padding:40px;font-family:sans-serif;color:#ef4444;background:#18181b"><h2>Render Error</h2><pre style="color:#e5e7eb;white-space:pre-wrap">${e?.message || e}</pre></body></html>`;
+    }
+  }, [state.blocks, state.sectionStyles, state.theme, state.variables]);
 
   useEffect(() => {
     if (state.exportTab === 'preview' && iframeRef.current) {
@@ -157,7 +178,7 @@ export const LivePreview: React.FC = () => {
             ref={iframeRef}
             style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: activeViewport.height }}
             title={`${state.activeTemplate} preview`}
-            sandbox="allow-same-origin allow-popups"
+            sandbox="allow-same-origin allow-popups allow-scripts"
           />
         </div>
       ) : (

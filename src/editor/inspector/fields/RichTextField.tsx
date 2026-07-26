@@ -15,6 +15,12 @@ export const RichTextField: React.FC<FieldProps<string>> = ({ value, onChange })
     }
   }, [onChange]);
 
+  React.useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value || '';
+    }
+  }, [value]);
+
   const exec = (command: string, val?: string) => {
     document.execCommand(command, false, val);
     editorRef.current?.focus();

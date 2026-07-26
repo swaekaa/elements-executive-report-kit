@@ -58,7 +58,7 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ block, theme, sect
       case 'core/timeline':
         return (
           <Timeline
-            events={block.data.events || []}
+            items={block.data.events || []}
             theme={theme}
           />
         );

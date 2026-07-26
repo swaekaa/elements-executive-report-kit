@@ -53,14 +53,19 @@ export function convertExecutiveDataToBlocks(data: ExecutiveReportData): Block[]
   }
 
   // 4. Timeline Section
-  const timelineSection = blocksRegistry.createInstance('core/section', {
-    id: 'section-timeline',
-    data: { title: 'Project Timeline', sectionNumber: '3' }
-  });
-  timelineSection.children = [
-    blocksRegistry.createInstance('core/timeline', { id: 'timeline-1' })
-  ];
-  blocks.push(timelineSection);
+  if (data.timeline && data.timeline.length > 0) {
+    const timelineSection = blocksRegistry.createInstance('core/section', {
+      id: 'section-timeline',
+      data: { title: 'Project Timeline', sectionNumber: '3' }
+    });
+    timelineSection.children = [
+      blocksRegistry.createInstance('core/timeline', {
+        id: 'timeline-1',
+        data: { events: data.timeline }
+      })
+    ];
+    blocks.push(timelineSection);
+  }
 
   // 5. Chart Section
   const chartSection = blocksRegistry.createInstance('core/section', {
@@ -68,19 +73,42 @@ export function convertExecutiveDataToBlocks(data: ExecutiveReportData): Block[]
     data: { title: 'Financial Overview', sectionNumber: '4' }
   });
   chartSection.children = [
-    blocksRegistry.createInstance('core/chart', { id: 'chart-1' })
+    blocksRegistry.createInstance('core/chart', {
+      id: 'chart-1',
+      data: {
+        chartType: 'bar',
+        data: [
+          { name: 'Q1', value: '4200' },
+          { name: 'Q2', value: '4800' },
+          { name: 'Q3', value: '5500' },
+          { name: 'Q4', value: '6200' }
+        ]
+      }
+    })
   ];
   blocks.push(chartSection);
 
-  // 6. Table Section
-  const tableSection = blocksRegistry.createInstance('core/section', {
-    id: 'section-table',
-    data: { title: 'Detailed Data', sectionNumber: '5' }
-  });
-  tableSection.children = [
-    blocksRegistry.createInstance('core/table', { id: 'table-1' })
-  ];
-  blocks.push(tableSection);
+  // 6. Table Section (Findings)
+  if (data.findings && data.findings.length > 0) {
+    const tableSection = blocksRegistry.createInstance('core/section', {
+      id: 'section-table',
+      data: { title: 'Key Findings', sectionNumber: '5' }
+    });
+    
+    // Map findings to a 2D array for the table
+    const tableRows = data.findings.map(f => [f.title, f.category, f.description]);
+    
+    tableSection.children = [
+      blocksRegistry.createInstance('core/table', {
+        id: 'table-1',
+        data: {
+          headers: [{ label: 'Finding' }, { label: 'Category' }, { label: 'Details' }],
+          rows: JSON.stringify(tableRows, null, 2)
+        }
+      })
+    ];
+    blocks.push(tableSection);
+  }
 
   return blocks;
 }
