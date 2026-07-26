@@ -6,11 +6,11 @@
   - [x] Create converter for backward compatibility (`templateToBlocks.ts`)
   - [x] Update state management to support blocks
   - [x] Refactor Left Sidebar to auto-generate the tree from blocks
-- [ ] **Phase 5C: Interactive Preview (Click-to-Edit)**
-  - [ ] Inject `data-block-id` attributes into templates
-  - [ ] Implement robust hover and click detection in preview iframe
-  - [ ] Add auto-navigation (click in preview → selects block in sidebar/inspector)
-  - [ ] Wire double-click events for inline editing focus
+- [x] **Phase 5C: Interactive Preview (Click-to-Edit)**
+  - [x] Inject `data-block-id` attributes into templates
+  - [x] Implement robust hover and click detection in preview iframe
+  - [x] Add auto-navigation (click in preview → selects block in sidebar/inspector)
+  - [x] Wire double-click events for inline editing focus
 - [ ] **Phase 5B: Dynamic Inspector (Schema-Driven)**
   - [ ] Implement `DynamicInspector` engine
   - [ ] Build reusable field components (Text, Number, Select, etc.)

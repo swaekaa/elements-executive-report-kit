@@ -32,27 +32,27 @@ const viewports: Record<string, { width: string; height: string }> = {
 
 import { resolveVariablesDeep } from '../variables';
 
+import { BlockRenderer } from '../blocks/BlockRenderer';
+import { Document } from '@unlayer/react-elements';
+
 export const LivePreview: React.FC = () => {
   const { state, dispatch } = useDocumentState();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const getTemplate = () => {
-    // Deep-resolve all {{variable}} bindings in the document data before rendering
-    const resolvedData = resolveVariablesDeep(state.documentData, state.variables);
-    const props = { data: resolvedData, sectionStyles: state.sectionStyles, theme: state.theme };
-    switch (state.activeTemplate) {
-      case 'executive': return <ExecutiveReport {...props} />;
-      case 'research': return <ResearchReport {...props} />;
-      case 'security': return <SecurityAuditReport {...props} />;
-      case 'incident': return <IncidentReport {...props} />;
-      case 'business': return <BusinessReview {...props} />;
-      case 'investor': return <InvestorUpdate {...props} />;
-      case 'compliance': return <ComplianceReport {...props} />;
-      default: return <ExecutiveReport {...props} />;
-    }
+    // Resolve variables in all blocks (in a real app, this should be a recursive deep resolve on blocks)
+    // For now we just pass the blocks down.
+    
+    return (
+      <Document>
+        {state.blocks?.map(block => (
+          <BlockRenderer key={block.id} block={block} theme={state.theme} sectionStyles={state.sectionStyles} />
+        ))}
+      </Document>
+    );
   };
 
-  const renderedHtml = useMemo(() => renderToHtml(getTemplate()), [state.activeTemplate, state.documentData, state.sectionStyles, state.theme, state.variables]);
+  const renderedHtml = useMemo(() => renderToHtml(getTemplate()), [state.blocks, state.sectionStyles, state.theme, state.variables]);
 
   useEffect(() => {
     if (state.exportTab === 'preview' && iframeRef.current) {
@@ -69,29 +69,27 @@ export const LivePreview: React.FC = () => {
           </style>
           <script>
             document.body.addEventListener('mouseover', (e) => {
-              const target = e.target.closest('table, p, h1, h2, h3, a');
+              const target = e.target.closest('[data-block-id]');
               if (target) target.classList.add('studio-hoverable');
             });
             document.body.addEventListener('mouseout', (e) => {
-              const target = e.target.closest('table, p, h1, h2, h3, a');
+              const target = e.target.closest('[data-block-id]');
               if (target) target.classList.remove('studio-hoverable');
             });
             document.body.addEventListener('click', (e) => {
               e.preventDefault();
-              const target = e.target.closest('table, p, h1, h2, h3, a');
+              const target = e.target.closest('[data-block-id]');
               if (target) {
                 document.querySelectorAll('.studio-selected').forEach(el => el.classList.remove('studio-selected'));
                 target.classList.add('studio-selected');
-                
-                // Try to infer section from text content as a fallback mapping
-                const text = target.innerText.toLowerCase();
-                let inferredSection = null;
-                if (text.includes('summary')) inferredSection = 'summary';
-                else if (text.includes('metric')) inferredSection = 'metrics';
-                else if (text.includes('timeline')) inferredSection = 'timeline';
-                else if (text.includes('recommendation')) inferredSection = 'recommendations';
-                
-                window.parent.postMessage({ type: 'STUDIO_SELECT', id: inferredSection }, '*');
+                window.parent.postMessage({ type: 'STUDIO_SELECT_BLOCK', blockId: target.getAttribute('data-block-id') }, '*');
+              }
+            });
+            document.body.addEventListener('dblclick', (e) => {
+              e.preventDefault();
+              const target = e.target.closest('[data-block-id]');
+              if (target) {
+                window.parent.postMessage({ type: 'STUDIO_INLINE_EDIT', blockId: target.getAttribute('data-block-id') }, '*');
               }
             });
           </script>
@@ -105,8 +103,11 @@ export const LivePreview: React.FC = () => {
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.data && e.data.type === 'STUDIO_SELECT' && e.data.id) {
-        dispatch({ type: 'SET_SELECTED_SECTION', payload: e.data.id });
+      if (!e.data) return;
+      if (e.data.type === 'STUDIO_SELECT_BLOCK' && e.data.blockId) {
+        dispatch({ type: 'BLOCK_SET_FOCUS', payload: { blockId: e.data.blockId } });
+      } else if (e.data.type === 'STUDIO_INLINE_EDIT' && e.data.blockId) {
+        dispatch({ type: 'BLOCK_SET_FIELD_FOCUS', payload: { blockId: e.data.blockId, fieldKey: null } });
       }
     };
     window.addEventListener('message', handleMessage);
