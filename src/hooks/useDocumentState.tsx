@@ -12,7 +12,7 @@ import type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, S
 export type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
 import '../blocks'; // Ensure blocks are registered before useDocumentState evaluates
 import type { Block } from '../blocks';
-import { convertExecutiveDataToBlocks } from '../blocks/templateToBlocks';
+import { convertTemplateToBlocks } from '../blocks/templateToBlocks';
 
 export interface ProjectState {
   projectMetadata: ProjectMetadata;
@@ -123,7 +123,7 @@ const initialProjectState: ProjectState = {
   },
   activeTemplate: 'executive',
   documentData: getInitialData('executive'),
-  blocks: convertExecutiveDataToBlocks(getInitialData('executive')),
+  blocks: convertTemplateToBlocks('executive', getInitialData('executive')),
   focusedBlockId: null,
   focusedFieldKey: null,
   theme: lightTheme,
@@ -187,14 +187,19 @@ const MAX_HISTORY = 50;
 
 const projectReducer = (state: ProjectState, action: Action): ProjectState => {
   switch (action.type) {
-    case 'SET_TEMPLATE':
+    case 'SET_TEMPLATE': {
+      const newData = getInitialData(action.payload);
       return {
         ...state,
         activeTemplate: action.payload,
-        documentData: getInitialData(action.payload),
+        documentData: newData,
+        blocks: convertTemplateToBlocks(action.payload, newData),
         sectionStyles: {},
-        selectedSectionId: null
+        selectedSectionId: null,
+        focusedBlockId: null,
+        focusedFieldKey: null
       };
+    }
     case 'UPDATE_DATA':
       return {
         ...state,

@@ -78,3 +78,4 @@ export const SelectField: React.FC<FieldProps<string>> = ({ value, onChange, opt
 
 export { ArrayField } from './fields/ArrayField';
 export { RichTextField } from './fields/RichTextField';
+export { TableDataField } from './fields/TableDataField';

@@ -2,13 +2,7 @@ import React, { useMemo, useEffect, useRef } from 'react';
 import { renderToHtml } from '@unlayer/react-elements';
 import { useDocumentState } from '../hooks/useDocumentState';
 
-import { ExecutiveReport } from '../templates/executive';
-import { ResearchReport } from '../templates/research';
-import { SecurityAuditReport } from '../templates/security';
-import { IncidentReport } from '../templates/incident/IncidentReport';
-import { BusinessReview } from '../templates/business/BusinessReview';
-import { InvestorUpdate } from '../templates/investor/InvestorUpdate';
-import { ComplianceReport } from '../templates/compliance/ComplianceReport';
+
 
 const viewports: Record<string, { width: string; height: string }> = {
   desktop: { width: '1440px', height: '900px' },
@@ -43,27 +37,13 @@ export const LivePreview: React.FC = () => {
     // Resolve variables in all blocks (in a real app, this should be a recursive deep resolve on blocks)
     // For now we just pass the blocks down.
     
-    // The new block-based architecture (Phase 5) is only implemented for the Executive template.
-    if (state.activeTemplate === 'executive') {
-      return (
-        <Document>
-          {state.blocks?.map(block => (
-            <BlockRenderer key={block.id} block={block} theme={state.theme} sectionStyles={state.sectionStyles} />
-          ))}
-        </Document>
-      );
-    }
-    
-    // Fallback to legacy static templates
-    switch (state.activeTemplate) {
-      case 'research': return <ResearchReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-      case 'security': return <SecurityAuditReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-      case 'incident': return <IncidentReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-      case 'business': return <BusinessReview data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-      case 'investor': return <InvestorUpdate data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-      case 'compliance': return <ComplianceReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-      default: return <ExecutiveReport data={state.documentData} theme={state.theme} sectionStyles={state.sectionStyles} />;
-    }
+    return (
+      <Document>
+        {state.blocks?.map(block => (
+          <BlockRenderer key={block.id} block={block} theme={state.theme} sectionStyles={state.sectionStyles} />
+        ))}
+      </Document>
+    );
   };
 
   const renderedHtml = useMemo(() => {
@@ -84,35 +64,47 @@ export const LivePreview: React.FC = () => {
         // Inject Figma-style interactive script and styles
         const interactiveHtml = renderedHtml.replace('</body>', `
           <style>
-            .studio-hoverable { transition: outline 0.1s; }
-            .studio-hoverable:hover { outline: 2px solid #3B82F6 !important; outline-offset: -2px; cursor: default; }
-            .studio-selected { outline: 2px solid #10B981 !important; outline-offset: -2px; }
+            body { padding-bottom: 40px !important; }
+            .studio-hoverable { outline: 2px solid #3B82F6 !important; outline-offset: -2px; cursor: default; transition: outline 0.1s; z-index: 9999; position: relative; }
+            .studio-selected { outline: 2px solid #10B981 !important; outline-offset: -2px; z-index: 9999; position: relative; }
           </style>
           <script>
-            document.body.addEventListener('mouseover', (e) => {
-              const target = e.target.closest('[data-block-id]');
-              if (target) target.classList.add('studio-hoverable');
-            });
-            document.body.addEventListener('mouseout', (e) => {
-              const target = e.target.closest('[data-block-id]');
-              if (target) target.classList.remove('studio-hoverable');
-            });
-            document.body.addEventListener('click', (e) => {
-              e.preventDefault();
-              const target = e.target.closest('[data-block-id]');
-              if (target) {
-                document.querySelectorAll('.studio-selected').forEach(el => el.classList.remove('studio-selected'));
-                target.classList.add('studio-selected');
-                window.parent.postMessage({ type: 'STUDIO_SELECT_BLOCK', blockId: target.getAttribute('data-block-id') }, '*');
-              }
-            });
-            document.body.addEventListener('dblclick', (e) => {
-              e.preventDefault();
-              const target = e.target.closest('[data-block-id]');
-              if (target) {
-                window.parent.postMessage({ type: 'STUDIO_INLINE_EDIT', blockId: target.getAttribute('data-block-id') }, '*');
-              }
-            });
+            (function() {
+              let currentHover = null;
+              document.body.addEventListener('mousemove', (e) => {
+                if (!e.target || typeof e.target.closest !== 'function') return;
+                const target = e.target.closest('[data-block-id]');
+                if (target !== currentHover) {
+                  if (currentHover) currentHover.classList.remove('studio-hoverable');
+                  if (target) target.classList.add('studio-hoverable');
+                  currentHover = target;
+                }
+              });
+              document.body.addEventListener('mouseleave', () => {
+                if (currentHover) {
+                  currentHover.classList.remove('studio-hoverable');
+                  currentHover = null;
+                }
+              });
+              document.body.addEventListener('click', (e) => {
+                if (!e.target || typeof e.target.closest !== 'function') return;
+                e.preventDefault();
+                const target = e.target.closest('[data-block-id]');
+                if (target) {
+                  document.querySelectorAll('.studio-selected').forEach(el => el.classList.remove('studio-selected'));
+                  target.classList.add('studio-selected');
+                  window.parent.postMessage({ type: 'STUDIO_SELECT_BLOCK', blockId: target.getAttribute('data-block-id') }, '*');
+                }
+              });
+              document.body.addEventListener('dblclick', (e) => {
+                if (!e.target || typeof e.target.closest !== 'function') return;
+                e.preventDefault();
+                const target = e.target.closest('[data-block-id]');
+                if (target) {
+                  window.parent.postMessage({ type: 'STUDIO_INLINE_EDIT', blockId: target.getAttribute('data-block-id') }, '*');
+                }
+              });
+            })();
           </script>
         </body>`);
 

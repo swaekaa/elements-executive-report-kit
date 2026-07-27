@@ -21,7 +21,7 @@ blocksRegistry.register({
     {
       key: 'rows',
       label: 'Rows Data (JSON array)',
-      type: 'textarea', // We will build a better spreadsheet editor, but for now we use JSON text or basic array
+      type: 'table_data', // Custom spreadsheet editor
       group: 'Data',
       defaultValue: '[\n  ["Row 1 Col 1", "Row 1 Col 2"],\n  ["Row 2 Col 1", "Row 2 Col 2"]\n]'
     }

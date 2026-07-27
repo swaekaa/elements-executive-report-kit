@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDocumentState } from '../../hooks/useDocumentState';
 import { blocksRegistry } from '../../blocks/registry';
-import { TextField, TextAreaField, SelectField, ArrayField, RichTextField } from './fields';
+import { TextField, TextAreaField, SelectField, ArrayField, RichTextField, TableDataField } from './fields';
 import type { Block } from '../../blocks/types';
 
 const findBlockDeep = (blocks: Block[], id: string): Block | undefined => {
@@ -101,6 +101,9 @@ export const DynamicInspector: React.FC = () => {
                       onChange={(items) => handleUpdate(field.key, items)}
                     />
                   );
+                  break;
+                case 'table_data':
+                  FieldComponent = <TableDataField value={value} onChange={v => handleUpdate(field.key, v)} />;
                   break;
                 default:
                   FieldComponent = <div style={{ color: '#ef4444', fontSize: '12px' }}>Unsupported field type: {field.type}</div>;
