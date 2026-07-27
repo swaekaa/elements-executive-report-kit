@@ -43,7 +43,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <Row backgroundColor={t.colors.background} padding="0">
       <Column>
-        <Html content={htmlContent} />
+        <Html html={htmlContent} />
       </Column>
     </Row>
   );
