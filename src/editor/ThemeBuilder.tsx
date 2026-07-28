@@ -106,7 +106,7 @@ export const ThemeBuilder: React.FC = () => {
                   type: 'UPDATE_THEME',
                   payload: {
                     typography: {
-                      ...state.theme.typography,
+                      ...(state.theme?.typography || {}),
                       fontFamily: `'${e.target.value}', sans-serif`
                     }
                   }
@@ -129,7 +129,7 @@ export const ThemeBuilder: React.FC = () => {
                   type: 'UPDATE_THEME',
                   payload: {
                     typography: {
-                      ...state.theme.typography,
+                      ...(state.theme?.typography || {}),
                       fontFamilyMono: `'${e.target.value}', monospace`
                     }
                   }

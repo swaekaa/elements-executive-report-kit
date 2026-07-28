@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Column, Heading, Paragraph, Html } from '@unlayer/react-elements';
+import { Row, Column, Html } from '@unlayer/react-elements';
 import type { Theme } from '../theme';
 
 export interface SummaryCardProps {

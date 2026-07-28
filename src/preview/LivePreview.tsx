@@ -48,8 +48,8 @@ export const LivePreview: React.FC = () => {
       let html = renderToHtml(getTemplate());
 
       const fontsToLoad = [];
-      const baseFont = state.theme?.typography?.fontFamily?.split(',')[0].replace(/['"]/g, '').trim() || 'Inter';
-      const monoFont = state.theme?.typography?.fontFamilyMono?.split(',')[0].replace(/['"]/g, '').trim() || 'Fira Code';
+      const baseFont = state.theme?.typography?.fontFamily?.split(',')?.[0]?.replace(/['"]/g, '')?.trim() || 'Inter';
+      const monoFont = state.theme?.typography?.fontFamilyMono?.split(',')?.[0]?.replace(/['"]/g, '')?.trim() || 'Fira Code';
       
       if (['Inter', 'Playfair Display', 'Roboto'].includes(baseFont)) fontsToLoad.push(baseFont.replace(/ /g, '+'));
       if (['Fira Code'].includes(monoFont)) fontsToLoad.push(monoFont.replace(/ /g, '+'));

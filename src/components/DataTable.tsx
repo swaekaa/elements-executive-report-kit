@@ -38,7 +38,7 @@ export const DataTable: React.FC<DataTableProps> = ({ headers, rows, caption, th
 
   const bodyRows = rows
     .map(
-      (row, rowIndex) => `
+      (row) => `
       <tr>
         ${row
           .map(
