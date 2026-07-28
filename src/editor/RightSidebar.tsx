@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { DynamicInspector } from './inspector/DynamicInspector';
-import { Settings, Paintbrush, LayoutTemplate, Type, Database, Eye, Code } from 'lucide-react';
+import { Settings, Paintbrush, LayoutTemplate, Type, Database, Eye, Code, Trash2 } from 'lucide-react';
 
 type InspectorTab = 'content' | 'style' | 'layout' | 'typography' | 'data' | 'accessibility' | 'advanced';
 
@@ -300,10 +300,21 @@ export const RightSidebar: React.FC = () => {
         alignItems: 'center'
       }}>
         <span>Inspector</span>
-        {state.selectedSectionId && (
-          <span style={{ fontSize: '11px', color: '#a1a1aa', fontWeight: 500, backgroundColor: '#18181b', border: '1px solid #27272a', padding: '2px 6px', borderRadius: '4px' }}>
-            {state.selectedSectionId}
-          </span>
+        {state.focusedBlockId && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: '#a1a1aa', fontWeight: 500, backgroundColor: '#18181b', border: '1px solid #27272a', padding: '2px 6px', borderRadius: '4px', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={state.focusedBlockId}>
+              {state.focusedBlockId.substring(0, 8)}
+            </span>
+            <button 
+              onClick={() => dispatch({ type: 'BLOCK_REMOVE', payload: { id: state.focusedBlockId! } })}
+              style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', opacity: 0.8 }}
+              onMouseOver={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+              title="Delete Block"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
         )}
       </div>
 

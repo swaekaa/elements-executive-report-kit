@@ -1,28 +1,34 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { renderToHtml } from '@unlayer/react-elements';
-import { getComponents } from '../registry';
+import { renderToHtml, Document } from '@unlayer/react-elements';
+import { blocksRegistry } from '../blocks/registry';
+import { BlockRenderer } from '../blocks/BlockRenderer';
 import { lightTheme } from '../theme';
 import { Search, Plus } from 'lucide-react';
-import type { ComponentMetadata } from '../registry/types';
+import type { BlockDefinition } from '../blocks/types';
+import { useDocumentState } from '../hooks/useDocumentState';
 
 // A dynamic preview component that isolates Elements HTML inside an iframe
-const DynamicPreview: React.FC<{ component: ComponentMetadata }> = React.memo(({ component }) => {
+const DynamicPreview: React.FC<{ definition: BlockDefinition }> = React.memo(({ definition }) => {
   const [html, setHtml] = useState<string>('');
 
   useEffect(() => {
     // Render the component asynchronously to avoid blocking the main thread
     const timer = setTimeout(() => {
       try {
-        const Cmp = component.Component;
-        const rendered = renderToHtml(<Cmp {...component.defaultProps} theme={lightTheme} />);
+        const dummyBlock = blocksRegistry.createInstance(definition.type);
+        const rendered = renderToHtml(
+          <Document>
+            <BlockRenderer block={dummyBlock} theme={lightTheme} sectionStyles={{}} />
+          </Document>
+        );
         setHtml(rendered);
       } catch (e) {
-        console.error('Failed to render preview for', component.id, e);
+        console.error('Failed to render preview for', definition.type, e);
         setHtml('<div>Preview Error</div>');
       }
     }, 100);
     return () => clearTimeout(timer);
-  }, [component]);
+  }, [definition]);
 
   if (!html) {
     return (
@@ -50,7 +56,7 @@ const DynamicPreview: React.FC<{ component: ComponentMetadata }> = React.memo(({
           pointerEvents: 'none' // Prevent interactions
         }}
         sandbox="allow-same-origin"
-        title={`Preview of ${component.name}`}
+        title={`Preview of ${definition.name}`}
       />
     </div>
   );
@@ -58,15 +64,16 @@ const DynamicPreview: React.FC<{ component: ComponentMetadata }> = React.memo(({
 
 export const ComponentLibrary: React.FC = () => {
   const [search, setSearch] = useState('');
-  const allComponents = getComponents();
+  const { dispatch } = useDocumentState();
+  const allDefinitions = blocksRegistry.getAll();
   
   const filtered = useMemo(() => {
-    if (!search) return allComponents;
-    return allComponents.filter(c => 
+    if (!search) return allDefinitions;
+    return allDefinitions.filter(c => 
       c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.tags.some(t => t.toLowerCase().includes(search.toLowerCase()))
+      c.type.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search, allComponents]);
+  }, [search, allDefinitions]);
 
   const categories = useMemo(() => {
     const cats = new Set<string>();
@@ -112,9 +119,9 @@ export const ComponentLibrary: React.FC = () => {
               {category}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {filtered.filter(c => c.category === category).map(component => (
+              {filtered.filter(c => c.category === category).map(definition => (
                 <div 
-                  key={component.id}
+                  key={definition.type}
                   style={{
                     border: '1px solid #E5E7EB',
                     borderRadius: '8px',
@@ -132,23 +139,30 @@ export const ComponentLibrary: React.FC = () => {
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  <DynamicPreview component={component} />
+                  <DynamicPreview definition={definition} />
                   <div style={{ padding: '10px 12px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>{component.name}</div>
-                      <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '2px' }}>{component.description}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>{definition.name}</div>
+                      <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '2px' }}>{definition.description}</div>
                     </div>
-                    <button style={{
-                      background: '#EFF6FF',
-                      border: 'none',
-                      color: '#2563EB',
-                      padding: '4px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }} title="Insert Component">
+                    <button
+                      onClick={() => {
+                        const newBlock = blocksRegistry.createInstance(definition.type);
+                        dispatch({ type: 'BLOCK_ADD', payload: { block: newBlock } });
+                      }}
+                      style={{
+                        background: '#EFF6FF',
+                        border: 'none',
+                        color: '#2563EB',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Add to document"
+                    >
                       <Plus size={16} />
                     </button>
                   </div>

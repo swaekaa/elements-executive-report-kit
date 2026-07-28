@@ -377,17 +377,7 @@ export const LeftSidebar: React.FC = () => {
           ))}
         </CollapsibleSection>
 
-        {/* Pages Section */}
-        <CollapsibleSection title="Pages" icon={<Layers size={14} />} defaultOpen={true}>
-          {['Overview (Default)', 'Appendix A', 'Financials'].map((page, i) => (
-            <TreeItem 
-              key={page} 
-              label={page} 
-              icon={<FileText size={14} />}
-              active={i === 0}
-            />
-          ))}
-        </CollapsibleSection>
+
 
         <CollapsibleSection title="Blocks" icon={<Layers size={14} />} defaultOpen={true}>
           {state.blocks?.map(block => (
@@ -396,11 +386,7 @@ export const LeftSidebar: React.FC = () => {
           <InsertBlockMenu dispatch={dispatch} parentId={null} level={0} />
         </CollapsibleSection>
 
-        <CollapsibleSection title="Themes" icon={<Palette size={14} />}>
-          {themes.map(theme => (
-            <TreeItem key={theme} label={theme} icon={<Palette size={14} />} />
-          ))}
-        </CollapsibleSection>
+
 
         <CollapsibleSection title="Variables" icon={<Type size={14} />} defaultOpen={true}>
           <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -466,17 +452,7 @@ export const LeftSidebar: React.FC = () => {
           </div>
         </CollapsibleSection>
 
-        <CollapsibleSection title="Data Presets" icon={<Database size={14} />}>
-          {dataPresets.map(preset => (
-            <TreeItem key={preset} label={preset} />
-          ))}
-        </CollapsibleSection>
 
-        <CollapsibleSection title="Assets" icon={<ImageIcon size={14} />}>
-          <TreeItem label="Logo (Dark).png" />
-          <TreeItem label="Logo (Light).png" />
-          <TreeItem label="cover-bg.jpg" />
-        </CollapsibleSection>
       </div>
     </div>
   );
