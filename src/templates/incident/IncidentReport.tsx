@@ -8,7 +8,6 @@ import {
   Timeline,
   Callout,
   RecommendationCard,
-  ContentBlock,
   Footer,
   SummaryCard
 } from '../../components';

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { FC } from 'react';
 import type { RenderMode } from '../types/studio';
 
 export type PropertyType = 'string' | 'number' | 'boolean' | 'color' | 'image' | 'richtext' | 'select';

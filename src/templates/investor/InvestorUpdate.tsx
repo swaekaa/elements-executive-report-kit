@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Row, Column, Paragraph, Heading } from '@unlayer/react-elements';
+import { Document } from '@unlayer/react-elements';
 import {
   Hero,
   Section,

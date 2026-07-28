@@ -15,13 +15,13 @@ export const TableDataField: React.FC<FieldProps<string>> = ({ value, onChange }
 
   const handleCellChange = (rowIndex: number, colIndex: number, newValue: string) => {
     const newRows = [...rows];
-    newRows[rowIndex] = [...newRows[rowIndex]];
+    newRows[rowIndex] = [...(newRows[rowIndex] || [])];
     newRows[rowIndex][colIndex] = newValue;
     onChange(JSON.stringify(newRows, null, 2));
   };
 
   const handleAddRow = () => {
-    const colCount = rows.length > 0 ? rows[0].length : 2;
+    const colCount = rows.length > 0 && rows[0] ? rows[0].length : 2;
     const newRow = Array(colCount).fill('New Value');
     const newRows = [...rows, newRow];
     onChange(JSON.stringify(newRows, null, 2));

@@ -9,8 +9,6 @@ const viewports: Record<string, { width: string; height: string }> = {
   laptop: { width: '1280px', height: '800px' },
   tablet: { width: '768px', height: '1024px' },
   phone: { width: '375px', height: '812px' },
-  foldable: { width: '844px', height: '1133px' },
-  square: { width: '800px', height: '800px' },
   letter: { width: '816px', height: '1056px' },
   a4: { width: '794px', height: '1123px' },
   poster: { width: '1728px', height: '2592px' },
@@ -23,8 +21,6 @@ const viewports: Record<string, { width: string; height: string }> = {
   kindle: { width: '1080px', height: '1440px' },
   ultrawide: { width: '3440px', height: '1440px' }
 };
-
-import { resolveVariablesDeep } from '../variables';
 
 import { BlockRenderer } from '../blocks/BlockRenderer';
 import { exportBlocksToMarkdown, exportBlocksToLatex } from '../blocks/transpilers';
@@ -50,10 +46,10 @@ export const LivePreview: React.FC = () => {
   const renderedHtml = useMemo(() => {
     try {
       let html = renderToHtml(getTemplate());
-      
+
       const fontsToLoad = [];
-      const baseFont = state.theme.typography.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
-      const monoFont = state.theme.typography.fontFamilyMono.split(',')[0].replace(/['"]/g, '').trim();
+      const baseFont = state.theme?.typography?.fontFamily?.split(',')[0].replace(/['"]/g, '').trim() || 'Inter';
+      const monoFont = state.theme?.typography?.fontFamilyMono?.split(',')[0].replace(/['"]/g, '').trim() || 'Fira Code';
       
       if (['Inter', 'Playfair Display', 'Roboto'].includes(baseFont)) fontsToLoad.push(baseFont.replace(/ /g, '+'));
       if (['Fira Code'].includes(monoFont)) fontsToLoad.push(monoFont.replace(/ /g, '+'));
@@ -182,7 +178,7 @@ export const LivePreview: React.FC = () => {
   }, [dispatch]);
 
   const activeArtifact = state.artifacts?.find(a => a.id === state.activeArtifactId) || state.artifacts?.[0];
-  const activeViewport = viewports[activeArtifact?.viewport || 'desktop'] || viewports['desktop'];
+  const activeViewport = viewports[activeArtifact?.viewport || 'desktop'] || { width: '1024px', height: '768px' };
 
   return (
     <div style={{

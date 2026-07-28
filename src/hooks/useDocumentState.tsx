@@ -8,7 +8,7 @@ import { incidentReportData, businessReviewData, investorUpdateData, complianceR
 import { defaultVariables } from '../variables';
 import type { VariableMap } from '../variables';
 
-import type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
+import type { TemplateId, ExportTab, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
 export type { TemplateId, RenderMode, ExportTab, ViewportMode, StyleOverrides, SectionStyles, Artifact, ProjectMetadata } from '../types/studio';
 import '../blocks'; // Ensure blocks are registered before useDocumentState evaluates
 import type { Block } from '../blocks';
@@ -72,6 +72,8 @@ type Action =
   | { type: 'BLOCK_ADD'; payload: { block: Block; parentId?: string; index?: number } }
   | { type: 'BLOCK_REMOVE'; payload: { id: string } }
   | { type: 'BLOCK_UPDATE'; payload: { id: string; changes: Partial<Block> } }
+  | { type: 'BLOCK_DUPLICATE'; payload: { id: string } }
+  | { type: 'BLOCK_MOVE'; payload: { id: string; direction: -1 | 1 } }
   | { type: 'BLOCK_SET_FOCUS'; payload: { blockId: string | null } }
   | { type: 'BLOCK_SET_FIELD_FOCUS'; payload: { blockId: string; fieldKey: string | null } }
   
@@ -392,7 +394,7 @@ const projectReducer = (state: ProjectState, action: Action): ProjectState => {
       return { 
         ...state, 
         artifacts: state.artifacts.filter(a => a.id !== action.payload),
-        activeArtifactId: state.activeArtifactId === action.payload ? state.artifacts[0]?.id : state.activeArtifactId
+        activeArtifactId: state.activeArtifactId === action.payload ? (state.artifacts[0]?.id || '') : state.activeArtifactId
       };
     case 'UPDATE_ARTIFACT':
       return {
@@ -430,6 +432,7 @@ const historyReducer = (state: StateHistory, action: Action): StateHistory => {
   if (action.type === 'UNDO') {
     if (state.past.length === 0) return state;
     const previous = state.past[state.past.length - 1];
+    if (!previous) return state;
     const newPast = state.past.slice(0, state.past.length - 1);
     return {
       past: newPast,
@@ -441,6 +444,7 @@ const historyReducer = (state: StateHistory, action: Action): StateHistory => {
   if (action.type === 'REDO') {
     if (state.future.length === 0) return state;
     const next = state.future[0];
+    if (!next) return state;
     const newFuture = state.future.slice(1);
     return {
       past: [...state.past, state.present],
