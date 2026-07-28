@@ -1,129 +1,162 @@
-# Elements Executive Report Kit
-
-A premium open-source component library and template collection for building beautiful executive documents using [Unlayer Elements](https://github.com/unlayer/elements).
+# Debriefs
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)
 ![Elements](https://img.shields.io/badge/Unlayer_Elements-React-orange.svg)
 
----
+A premium open-source component library and interactive Studio built on top of [Unlayer Elements](https://github.com/unlayer/elements) for composing beautiful, data-driven executive documents, web landing pages, and email broadcasts.
 
-## Overview
-
-**Elements Executive Report Kit** is a collection of reusable, data-driven document components and ready-to-use templates built on top of [Unlayer Elements](https://unlayer.com/elements). It demonstrates how developers can compose professional executive documents using a code-first approach with React and TypeScript.
-
-The kit includes three polished templates, 17+ reusable components, a theme system, and a preview application — all powered by Unlayer Elements as the core rendering engine.
+> **Note:** You can insert a hero image or GIF of the app in action here.
+> `![App Demo](docs/assets/hero-demo.gif)`
 
 ---
 
-## Why Elements
-
-[Unlayer Elements](https://github.com/unlayer/elements) provides a unique set of capabilities that make it ideal for document generation:
-
-- **Code-first React components** — Build documents using familiar JSX with `Row`, `Column`, `Heading`, `Paragraph`, `Html`, and more.
-- **Write once, render anywhere** — The same component tree renders to email-safe HTML, responsive web pages, or print-ready documents.
-- **Clean output** — Generates production-ready HTML without React hydration markers or runtime JavaScript.
-- **TypeScript-first** — Full type definitions and IDE autocomplete for every component and prop.
-- **Framework-native** — Works with Vite, Next.js, Remix, and other modern React frameworks.
-- **Visual editor compatibility** — Designs can round-trip to Unlayer's visual editor via `renderToJson()`.
+## 📖 Table of Contents
+- [Overview](#overview)
+- [How Unlayer Elements Makes It Easier](#how-unlayer-elements-makes-it-easier)
+- [How We Used Elements](#how-we-used-elements)
+- [Getting Started (How to Run)](#getting-started)
+- [How to Edit in the Studio](#how-to-edit-in-the-studio)
+- [Templates Overview](#templates-overview)
+- [Architecture](#architecture)
 
 ---
 
-## Features
+## 🌟 Overview
 
-- 🖥️ **Interactive Elements Studio** — A 3-panel SaaS application showcasing live-editing of Unlayer Elements documents.
-- 🎛️ **Global State Management** — Real-time updates with Context, `useReducer`, and `localStorage` persistence.
-- 🧱 **19+ Reusable Components** — Includes `MetricCard`, `Timeline`, `DataTable`, `ChartPlaceholder`, `SummaryCard`, `InfoGrid`, and more.
-- 📊 **7 Professional Templates** — Executive Report, Research Report, Security Audit, Incident Report, Business Review, Investor Update, and Compliance Report.
-- 🎨 **Theme & Property Controls** — Context-sensitive right sidebar to edit section-level padding, backgrounds, and alignment on the fly.
-- 📱 **Responsive & Print-Friendly** — Consistent layouts across screen sizes and print output.
-- 🖨️ **Export Engine** — Download raw Elements HTML, JSON schema, or trigger system Print/PDF workflows.
-- 🔧 **TypeScript** — Full type safety across components, state, data, and theme.
+**Debriefs** is not just a template gallery—it is a fully functional **Elements Studio** (a mini-SaaS app). It demonstrates how developers can compose professional documents using a code-first approach with React and TypeScript, and then dynamically edit and preview those documents in real-time.
+
+The kit includes a suite of 7 polished templates, a dynamic WYSIWYG inspector, a theme builder, and a robust block-based rendering engine.
 
 ---
 
-## Architecture
+## 💡 How Unlayer Elements Makes It Easier
 
-The project has evolved from a static template gallery into a fully functional **Elements Studio**.
+Historically, building responsive emails or print-ready PDFs required writing archaic, nested HTML `<table>` structures and fighting with email client idiosyncrasies (Outlook, Gmail, etc.). 
 
-### Application Shell (The Editor)
-The Studio is built using standard React components (not Elements):
-- `EditorLayout`: The 3-panel shell.
-- `LeftSidebar`: Navigation, brand inputs, section selection, and export controls.
-- `RightSidebar`: Context-sensitive property editor for the currently selected section.
-- `useDocumentState`: The source of truth (Context + Reducer).
+**Unlayer Elements** solves this by providing a clean, modern React abstraction. It makes document generation exponentially easier because:
 
-### Document Rendering (The Core)
-Everything inside the document preview and export payload is rendered exclusively using **Unlayer Elements**.
-
-```
-Template → Components → Elements Primitives → renderToHtml() → Iframe Preview
-```
-
-The `LivePreview` component acts as a subscriber to the global state. Whenever data, styles, or themes change, it triggers `renderToHtml()` and seamlessly updates the iframe.
+- **No More Nested Tables**: You write modern, semantic React code (`Row`, `Column`, `Heading`). Elements compiles it into bulletproof, email-safe HTML under the hood.
+- **Write Once, Render Anywhere**: A single React component tree can be rendered flawlessly to an Email Broadcast, a Web Landing Page, or a Print-Ready PDF.
+- **Developer Experience**: It leverages the React ecosystem. You get full TypeScript type safety, props, state, and component composition. 
+- **Zero Runtime Overhead**: It outputs raw, production-ready HTML strings via `renderToHtml()` without injecting any React hydration scripts or client-side JavaScript.
 
 ---
 
-## Folder Structure
+## 🛠️ How We Used Elements
+
+In this project, we heavily rely on Unlayer Elements primitives to construct robust layout blocks:
+
+1. **Primitives**: Every visual component (`Hero`, `ContentBlock`, `Quote`, `Timeline`) is built purely out of Unlayer's `@unlayer/react-elements` exports (e.g., `<Document>`, `<Row>`, `<Column>`, `<Paragraph>`, `<Heading>`, `<Image>`, `<Html>`).
+2. **Dynamic Data Binding**: We pass our application state (themes, custom colors, JSON data) directly into Elements as standard React props.
+3. **The Rendering Pipeline**: We maintain a JSON representation of our document blocks. Our `LivePreview.tsx` engine maps over these blocks, wraps them in a `<Document>`, and instantly converts them to an iframe-ready preview using:
+   ```typescript
+   import { renderToHtml } from '@unlayer/react-elements';
+   const htmlString = renderToHtml(<MyDocument />);
+   ```
+4. **Custom Overrides**: For complex components like Charts or Data Tables, we utilize the `<Html>` primitive provided by Elements to seamlessly inject custom CSS grids or SVG charts into the strict Elements layout structure.
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run the Elements Studio locally:
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/elements-executive-report-kit.git
+   cd elements-executive-report-kit
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+4. **Open your browser:** Navigate to `http://localhost:5173` to interact with the Studio.
+
+---
+
+## ✍️ How to Edit in the Studio
+
+The application acts as a complete WYSIWYG editor showcasing the power of Elements.
+
+### 1. Left Sidebar (Navigation & Artifacts)
+- **Artifacts**: Switch between different render targets (e.g., Executive Report Document, Email Broadcast, Landing Page). This demonstrates how Elements adapts the same content to different viewports (Desktop, Mobile, A4).
+- **Templates**: Swap the core content layout between 7 distinct report types.
+
+### 2. The Canvas (Live Preview)
+- Click on any block (Hero, Timeline, Table) in the center iframe to select it. The preview updates in real-time as you type or change colors.
+
+### 3. Right Sidebar (Dynamic Inspector & Theme)
+When a block is selected, the **Dynamic Inspector** appears on the right:
+- **Content Tab**: Edit the raw JSON data, text fields, and arrays that populate the selected block.
+- **Variables**: Inject dynamic variables (e.g., `{{COMPANY_NAME}}`) directly into text fields.
+- **Theme Builder**: Click the global "Theme" tab to override brand colors (Primary, Background, Text) and typography (Base Font, Monospace Font). Elements automatically propagates these CSS styles down the tree.
+
+### 4. Command Palette
+- Press `Ctrl + K` (or `Cmd + K`) to open the global Command Palette for quick access to templates, export formats (HTML, JSON, Markdown, LaTeX), and zoom controls.
+
+---
+
+## 📑 Templates Overview
+
+The kit comes with 7 ready-to-use templates. Each template is a composition of smaller Elements blocks.
+
+> *(Note: You can add your own GIFs or Screenshots below by replacing the placeholder links with actual local files from a `docs/assets/` folder)*
+
+### 1. Executive Report
+Quarterly performance report designed for C-level leadership. Focuses on high-level metrics, strategic summaries, and clean typography.
+> `![Executive Report](docs/assets/exec-report.gif)`
+
+### 2. Research Report
+Academic-style report for publishing experiments or whitepapers. Features abstract layouts, multi-column data, and citation blocks.
+> `![Research Report](docs/assets/research-report.gif)`
+
+### 3. Security Audit
+Technical template for vulnerability findings and risk matrices. Includes severity badging and strict tabular layouts.
+> `![Security Audit](docs/assets/security-audit.gif)`
+
+### 4. Incident Report
+Post-mortem template containing timelines, root cause analysis blocks, and impact summaries.
+> `![Incident Report](docs/assets/incident-report.gif)`
+
+### 5. Business Review
+Designed for Monthly/Quarterly Business Reviews (MBR/QBR). Heavy emphasis on financial highlights, charts, and operational updates.
+> `![Business Review](docs/assets/business-review.gif)`
+
+### 6. Investor Update
+Optimized for email broadcasts to stakeholders. Features a CEO message, fundraising milestones, and a clean single-column responsive layout.
+> `![Investor Update](docs/assets/investor-update.gif)`
+
+### 7. Compliance Report
+Structured layout for SOC2 / Framework compliance assessments, policy reviews, and audit trails.
+> `![Compliance Report](docs/assets/compliance-report.gif)`
+
+---
+
+## 📁 Architecture
 
 ```
 elements-executive-report-kit/
 ├── src/
-│   ├── components/            # Reusable Elements-based components
-│   ├── data/                  # Mock data for templates
-│   ├── editor/                # The React-based Studio UI (Sidebars, Layout)
-│   ├── hooks/                 # Global state management
-│   ├── preview/               # Live iframe renderer
-│   ├── renderer/              # Export utilities (HTML, JSON)
-│   ├── templates/             # 7 Document templates
-│   ├── theme/                 # Design tokens
-│   ├── App.tsx                # Mounts the Studio
-│   └── main.tsx
+│   ├── blocks/                # Core block definitions and registry
+│   ├── components/            # Reusable @unlayer/react-elements primitives
+│   ├── editor/                # React Studio UI (Sidebars, Command Palette)
+│   ├── hooks/                 # Global state (useDocumentState context)
+│   ├── preview/               # Live iframe renderer using renderToHtml
+│   ├── templates/             # Composition of the 7 report layouts
+│   └── App.tsx                # Mounts the Studio shell
 ```
 
----
-
-## Template Descriptions
-
-1. **Executive Report**: Quarterly performance report for leadership.
-2. **Research Report**: Academic-style experiment report.
-3. **Security Audit**: Vulnerability findings and risk matrices.
-4. **Incident Report**: Post-mortem timeline and root cause analysis.
-5. **Business Review**: Financial highlights and operational updates.
-6. **Investor Update**: CEO message and fundraising milestones.
-7. **Compliance Report**: SOC2 / Framework compliance assessment.
-
----
-
-## Future Roadmap
-
-- [ ] Dark mode theme controls in the sidebar
-- [ ] Drag-and-drop section reordering
-- [ ] Connect a real backend to save JSON schemas
-- [ ] Storybook component documentation
-- [ ] Unit tests for components and rendering
-
----
-
-## Built With
-
-- [Unlayer Elements](https://github.com/unlayer/elements) — Core rendering engine
-- [React](https://react.dev) — UI framework
-- [TypeScript](https://typescriptlang.org) — Type safety
-- [Vite](https://vitejs.dev) — Build tool
-
----
-
-## License
-
+## 📜 License
 MIT — see [LICENSE](LICENSE) for details.
-
----
-
-## Contributing
-
-Contributions are welcome. Please open an issue to discuss proposed changes before submitting a pull request.
-
----
 
 Built for the [Build with Elements Challenge](https://unlayer.com/elements).

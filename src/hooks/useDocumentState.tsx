@@ -118,7 +118,7 @@ const defaultArtifacts: Artifact[] = [
 const initialProjectState: ProjectState = {
   projectMetadata: {
     id: 'proj-default',
-    name: 'AI Startup Series A',
+    name: 'Debriefs',
     description: 'Executive reporting for Q4',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -493,7 +493,7 @@ export const useDocumentState = useProjectState;
 export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [historyState, dispatch] = useReducer(historyReducer, initialState, (initial) => {
     try {
-      const saved = localStorage.getItem('elements-studio-state-v5');
+      const saved = localStorage.getItem('elements-studio-state-v6');
       if (saved) {
         const parsed = JSON.parse(saved);
         // Safely merge present state with initial to avoid undefined properties
@@ -517,7 +517,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
   });
 
   useEffect(() => {
-    localStorage.setItem('elements-studio-state-v5', JSON.stringify(historyState));
+    localStorage.setItem('elements-studio-state-v6', JSON.stringify(historyState));
   }, [historyState]);
 
   // Global Keyboard Shortcuts
