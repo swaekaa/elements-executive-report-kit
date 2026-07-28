@@ -6,8 +6,7 @@
 
 A premium open-source component library and interactive Studio built on top of [Unlayer Elements](https://github.com/unlayer/elements) for composing beautiful, data-driven executive documents, web landing pages, and email broadcasts.
 
-> **Note:** You can insert a hero image or GIF of the app in action here.
-> `![App Demo](docs/assets/hero-demo.gif)`
+![App Demo](public/screenshots/hero.gif)
 
 ---
 
@@ -19,6 +18,7 @@ A premium open-source component library and interactive Studio built on top of [
 - [How to Edit in the Studio](#how-to-edit-in-the-studio)
 - [Templates Overview](#templates-overview)
 - [Architecture](#architecture)
+- [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -92,6 +92,8 @@ The application acts as a complete WYSIWYG editor showcasing the power of Elemen
 - **Artifacts**: Switch between different render targets (e.g., Executive Report Document, Email Broadcast, Landing Page). This demonstrates how Elements adapts the same content to different viewports (Desktop, Mobile, A4).
 - **Templates**: Swap the core content layout between 7 distinct report types.
 
+![Left Sidebar](public/screenshots/leftSidebar.gif)
+
 ### 2. The Canvas (Live Preview)
 - Click on any block (Hero, Timeline, Table) in the center iframe to select it. The preview updates in real-time as you type or change colors.
 
@@ -100,6 +102,8 @@ When a block is selected, the **Dynamic Inspector** appears on the right:
 - **Content Tab**: Edit the raw JSON data, text fields, and arrays that populate the selected block.
 - **Variables**: Inject dynamic variables (e.g., `{{COMPANY_NAME}}`) directly into text fields.
 - **Theme Builder**: Click the global "Theme" tab to override brand colors (Primary, Background, Text) and typography (Base Font, Monospace Font). Elements automatically propagates these CSS styles down the tree.
+
+![Right Sidebar](public/screenshots/rightSidebar.gif)
 
 ### 4. Command Palette
 - Press `Ctrl + K` (or `Cmd + K`) to open the global Command Palette for quick access to templates, export formats (HTML, JSON, Markdown, LaTeX), and zoom controls.
@@ -110,35 +114,40 @@ When a block is selected, the **Dynamic Inspector** appears on the right:
 
 The kit comes with 7 ready-to-use templates. Each template is a composition of smaller Elements blocks.
 
-> *(Note: You can add your own GIFs or Screenshots below by replacing the placeholder links with actual local files from a `docs/assets/` folder)*
-
 ### 1. Executive Report
 Quarterly performance report designed for C-level leadership. Focuses on high-level metrics, strategic summaries, and clean typography.
-> `![Executive Report](docs/assets/exec-report.gif)`
+
+![Executive Report](public/screenshots/execReport.gif)
 
 ### 2. Research Report
 Academic-style report for publishing experiments or whitepapers. Features abstract layouts, multi-column data, and citation blocks.
-> `![Research Report](docs/assets/research-report.gif)`
+
+![Research Report](public/screenshots/researchReport.gif)
 
 ### 3. Security Audit
 Technical template for vulnerability findings and risk matrices. Includes severity badging and strict tabular layouts.
-> `![Security Audit](docs/assets/security-audit.gif)`
+
+![Security Audit](public/screenshots/securityAudit.gif)
 
 ### 4. Incident Report
 Post-mortem template containing timelines, root cause analysis blocks, and impact summaries.
-> `![Incident Report](docs/assets/incident-report.gif)`
+
+![Incident Report](public/screenshots/incidentReport.gif)
 
 ### 5. Business Review
 Designed for Monthly/Quarterly Business Reviews (MBR/QBR). Heavy emphasis on financial highlights, charts, and operational updates.
-> `![Business Review](docs/assets/business-review.gif)`
+
+![Business Review](public/screenshots/businessReview.gif)
 
 ### 6. Investor Update
 Optimized for email broadcasts to stakeholders. Features a CEO message, fundraising milestones, and a clean single-column responsive layout.
-> `![Investor Update](docs/assets/investor-update.gif)`
+
+![Investor Update](public/screenshots/investorUpdates.gif)
 
 ### 7. Compliance Report
 Structured layout for SOC2 / Framework compliance assessments, policy reviews, and audit trails.
-> `![Compliance Report](docs/assets/compliance-report.gif)`
+
+![Compliance Report](public/screenshots/compilenceReport.gif)
 
 ---
 
@@ -155,6 +164,11 @@ elements-executive-report-kit/
 │   ├── templates/             # Composition of the 7 report layouts
 │   └── App.tsx                # Mounts the Studio shell
 ```
+
+## ❤️ Acknowledgements
+A massive thank you to the [Unlayer Elements](https://unlayer.com/elements) team! It was incredibly fun and insightful to work with this library, demonstrating how deeply React can be leveraged to generate pixel-perfect documents and emails effortlessly.
+
+Special thanks to [Eric Della Casa](https://www.linkedin.com/in/eric-della-casa-4262839b/) for introducing me to this amazing opportunity and the Build with Elements Challenge.
 
 ## 📜 License
 MIT — see [LICENSE](LICENSE) for details.
