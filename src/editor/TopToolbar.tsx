@@ -36,7 +36,7 @@ export const TopToolbar: React.FC = () => {
     }}>
       {/* Left: Branding & History */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ fontWeight: 600, color: '#D97706' }}>Elements Studio</div>
+        <div style={{ fontWeight: 600, color: '#D97706' }}>Debrief</div>
         <div style={{ width: '1px', height: '24px', backgroundColor: '#E6E4DD' }} />
         <div style={{ display: 'flex', gap: '4px' }}>
           <button 
