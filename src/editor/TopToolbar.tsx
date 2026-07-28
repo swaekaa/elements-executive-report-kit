@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
-import { Undo, Redo, Monitor, FileText, Mail, Layout, Code, FileJson, Type, Box } from 'lucide-react';
+import { Undo, Redo, Monitor, FileText, Mail, Layout, Code, FileJson, Type, Box, Download } from 'lucide-react';
 import type { ExportTab } from '../hooks/useDocumentState';
 
 export const TopToolbar: React.FC = () => {
@@ -151,6 +151,27 @@ export const TopToolbar: React.FC = () => {
             <option value={1.25}>125%</option>
             <option value={1.5}>150%</option>
           </select>
+
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('EXPORT_TO_PDF'))}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              border: '1px solid #D97706',
+              background: '#FFFBEB',
+              borderRadius: '4px',
+              color: '#D97706',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 600,
+              marginLeft: '8px'
+            }}
+          >
+            <Download size={14} />
+            PDF
+          </button>
         </div>
       </div>
     </div>

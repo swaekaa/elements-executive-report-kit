@@ -25,6 +25,7 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ block, theme, sect
             organization={block.data.organization}
             version={block.data.version}
             theme={theme}
+            styleOverrides={sectionStyles[block.id]}
           />
         );
       case 'core/section':

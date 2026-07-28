@@ -34,8 +34,8 @@ const SortableItem = ({ id, index, item, schema, onChange, onRemove }: any) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    backgroundColor: '#18181b',
-    border: '1px solid #27272a',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #E6E4DD',
     borderRadius: '6px',
     marginBottom: '8px',
     overflow: 'hidden'
@@ -47,23 +47,23 @@ const SortableItem = ({ id, index, item, schema, onChange, onRemove }: any) => {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '8px', borderBottom: expanded ? '1px solid #27272a' : 'none' }}>
-        <button {...attributes} {...listeners} style={{ background: 'none', border: 'none', cursor: 'grab', padding: '4px', color: '#71717a' }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '8px', borderBottom: expanded ? '1px solid #E6E4DD' : 'none' }}>
+        <button {...attributes} {...listeners} style={{ background: 'none', border: 'none', cursor: 'grab', padding: '4px', color: '#787569' }}>
           <GripVertical size={14} />
         </button>
-        <div style={{ flex: 1, padding: '0 8px', fontSize: '12px', color: '#e5e7eb', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={() => setExpanded(!expanded)}>
+        <div style={{ flex: 1, padding: '0 8px', fontSize: '12px', color: '#3C3830', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={() => setExpanded(!expanded)}>
           {item.label || item.title || `Item ${index + 1}`}
         </div>
         <button onClick={(e) => { e.stopPropagation(); onRemove(index); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#ef4444', opacity: 0.7 }}>
           <Trash2 size={14} />
         </button>
-        <button onClick={() => setExpanded(!expanded)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#a1a1aa' }}>
+        <button onClick={() => setExpanded(!expanded)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#787569' }}>
           {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
       </div>
       
       {expanded && (
-        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: '#0f0f0f' }}>
+        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: '#FAFAED' }}>
           {schema.map((field: BlockFieldSchema) => {
             const value = item[field.key] ?? field.defaultValue;
             let FieldComp = null;
@@ -73,7 +73,7 @@ const SortableItem = ({ id, index, item, schema, onChange, onRemove }: any) => {
             
             return (
               <div key={field.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <label style={{ fontSize: '11px', color: '#a1a1aa' }}>{field.label}</label>
+                <label style={{ fontSize: '11px', color: '#787569' }}>{field.label}</label>
                 {FieldComp}
               </div>
             );
@@ -136,11 +136,11 @@ export const ArrayField: React.FC<ArrayFieldProps> = ({ label, items, schema, on
         onClick={handleAdd}
         style={{
           width: '100%', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-          background: 'transparent', border: '1px dashed #3f3f46', borderRadius: '6px', color: '#a1a1aa', fontSize: '12px',
+          background: 'transparent', border: '1px dashed #E6E4DD', borderRadius: '6px', color: '#787569', fontSize: '12px',
           cursor: 'pointer', transition: 'all 0.15s ease'
         }}
-        onMouseOver={e => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.color = '#3B82F6'; }}
-        onMouseOut={e => { e.currentTarget.style.borderColor = '#3f3f46'; e.currentTarget.style.color = '#a1a1aa'; }}
+        onMouseOver={e => { e.currentTarget.style.borderColor = '#D97706'; e.currentTarget.style.color = '#D97706'; }}
+        onMouseOut={e => { e.currentTarget.style.borderColor = '#E6E4DD'; e.currentTarget.style.color = '#787569'; }}
       >
         <Plus size={14} /> Add Item
       </button>

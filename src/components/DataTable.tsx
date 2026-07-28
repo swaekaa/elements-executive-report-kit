@@ -24,8 +24,10 @@ export const DataTable: React.FC<DataTableProps> = ({ headers, rows, caption, th
         font-size: ${t.typography.fontSize.sm};
         font-weight: ${t.typography.fontWeight.semibold};
         color: ${t.colors.textSecondary};
+        background: ${t.colors.surface};
         text-align: left;
-        padding: 12px 16px;
+        padding: 16px;
+        border: 1px solid ${t.colors.border};
         border-bottom: 2px solid ${t.colors.border};
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -43,11 +45,13 @@ export const DataTable: React.FC<DataTableProps> = ({ headers, rows, caption, th
             (cell) => `
           <td style="
             font-family: ${t.typography.fontFamily};
-            font-size: ${t.typography.fontSize.base};
+            font-size: ${t.typography.fontSize.sm};
             color: ${t.colors.textPrimary};
-            padding: 12px 16px;
-            border-bottom: 1px solid ${t.colors.borderLight};
-            background: ${rowIndex % 2 === 0 ? t.colors.background : t.colors.surface};
+            padding: 16px;
+            border: 1px solid ${t.colors.border};
+            background: ${t.colors.background};
+            vertical-align: top;
+            line-height: 1.6;
           ">${cell}</td>
         `
           )
@@ -66,6 +70,7 @@ export const DataTable: React.FC<DataTableProps> = ({ headers, rows, caption, th
               border: 1px solid ${t.colors.border};
               border-radius: ${t.borders.radius.lg};
               overflow: hidden;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             ">
               ${caption ? `<div style="
                 font-family: ${t.typography.fontFamily};

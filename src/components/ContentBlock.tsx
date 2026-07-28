@@ -18,7 +18,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({ children, theme }) =
       <Column>
         <Html
           html={`
-            <div style="font-family: ${t.typography.fontFamily}; font-size: ${t.typography.fontSize.base}; color: ${t.colors.textSecondary}; line-height: 1.6;">
+            <div style="font-family: ${t.typography.fontFamily.replace(/['"]/g, '')}; font-size: ${t.typography.fontSize.base}; color: ${t.colors.textSecondary}; line-height: 1.6;">
               ${children}
             </div>
           `}

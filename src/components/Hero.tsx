@@ -10,6 +10,10 @@ export interface HeroProps {
   organization?: string;
   version?: string;
   theme: Theme;
+  styleOverrides?: {
+    backgroundColor?: string;
+    color?: string;
+  };
 }
 
 /**
@@ -24,20 +28,24 @@ export const Hero: React.FC<HeroProps> = ({
   organization,
   version,
   theme,
+  styleOverrides = {},
 }) => {
   const t = theme;
+  const bgColor = styleOverrides.backgroundColor || t.colors.neutral[950];
+  const textColor = styleOverrides.color || '#FFFFFF';
+  const subtitleColor = styleOverrides.color ? styleOverrides.color : t.colors.neutral[400];
 
   return (
-    <Row backgroundColor={t.colors.neutral[950]} padding="64px 0 56px 0">
+    <Row backgroundColor={bgColor} padding="64px 0 56px 0">
       <Column>
         {organization && (
           <Html
             html={`
               <div style="
-                font-family: ${t.typography.fontFamily};
+                font-family: ${t.typography.fontFamily.replace(/['"]/g, '')};
                 font-size: ${t.typography.fontSize.sm};
                 font-weight: ${t.typography.fontWeight.semibold};
-                color: ${t.colors.neutral[400]};
+                color: ${subtitleColor};
                 text-transform: uppercase;
                 letter-spacing: 2px;
                 margin-bottom: 24px;
@@ -48,13 +56,13 @@ export const Hero: React.FC<HeroProps> = ({
         <Heading
           headingType="h1"
           fontSize={t.typography.fontSize['5xl']}
-          color="#FFFFFF"
+          color={textColor}
           textAlign="left"
         >
           {title}
         </Heading>
         {subtitle && (
-          <Paragraph fontSize={t.typography.fontSize.xl} color={t.colors.neutral[400]}>
+          <Paragraph fontSize={t.typography.fontSize.xl} color={subtitleColor}>
             {subtitle}
           </Paragraph>
         )}
@@ -62,14 +70,14 @@ export const Hero: React.FC<HeroProps> = ({
           html={`
             <div style="
               margin-top: 32px;
-              font-family: ${t.typography.fontFamily};
+              font-family: ${t.typography.fontFamily.replace(/['"]/g, '')};
               font-size: ${t.typography.fontSize.sm};
-              color: ${t.colors.neutral[500]};
+              color: ${textColor};
               line-height: ${t.typography.lineHeight.relaxed};
             ">
-              ${author ? `<div><span style="color: ${t.colors.neutral[400]};">Author:</span> ${author}</div>` : ''}
-              ${date ? `<div><span style="color: ${t.colors.neutral[400]};">Date:</span> ${date}</div>` : ''}
-              ${version ? `<div><span style="color: ${t.colors.neutral[400]};">Version:</span> ${version}</div>` : ''}
+              ${author ? `<div style="margin-bottom: 4px;"><span style="opacity: 0.6; font-weight: ${t.typography.fontWeight.medium}; margin-right: 6px;">Author:</span> <span style="opacity: 0.95;">${author}</span></div>` : ''}
+              ${date ? `<div style="margin-bottom: 4px;"><span style="opacity: 0.6; font-weight: ${t.typography.fontWeight.medium}; margin-right: 6px;">Date:</span> <span style="opacity: 0.95;">${date}</span></div>` : ''}
+              ${version ? `<div><span style="opacity: 0.6; font-weight: ${t.typography.fontWeight.medium}; margin-right: 6px;">Version:</span> <span style="opacity: 0.95;">${version}</span></div>` : ''}
             </div>
           `}
         />

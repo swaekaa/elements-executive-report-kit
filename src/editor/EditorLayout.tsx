@@ -8,7 +8,7 @@ import { StatusBar } from './StatusBar';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { ComponentLibrary } from './ComponentLibrary';
 import { ThemeBuilder } from './ThemeBuilder';
-import { Folder, Package, Settings, Palette } from 'lucide-react';
+import { Folder, Package, Palette, Github } from 'lucide-react';
 
 const ActivityBar: React.FC = () => {
   const { state, dispatch } = useDocumentState();
@@ -61,14 +61,20 @@ const ActivityBar: React.FC = () => {
       <NavItem id="components" icon={<Package size={24} />} title="Component Library" />
       <NavItem id="theme" icon={<Palette size={24} />} title="Theme Builder" />
       <div style={{ flex: 1 }} />
-      <button style={{
-        width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'transparent', border: 'none', color: '#A39C8C', cursor: 'pointer'
-      }} title="Settings"
-      onMouseEnter={e => e.currentTarget.style.color = '#D97706'}
-      onMouseLeave={e => e.currentTarget.style.color = '#A39C8C'}>
-        <Settings size={24} />
-      </button>
+      <a 
+        href="https://github.com/swaekaa/elements-executive-report-kit"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'transparent', border: 'none', color: '#A39C8C', cursor: 'pointer', textDecoration: 'none'
+        }} 
+        title="View Source on GitHub"
+        onMouseEnter={e => e.currentTarget.style.color = '#111827'}
+        onMouseLeave={e => e.currentTarget.style.color = '#A39C8C'}
+      >
+        <Github size={22} />
+      </a>
     </div>
   );
 };

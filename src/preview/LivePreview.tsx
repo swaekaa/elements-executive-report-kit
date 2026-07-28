@@ -27,6 +27,7 @@ const viewports: Record<string, { width: string; height: string }> = {
 import { resolveVariablesDeep } from '../variables';
 
 import { BlockRenderer } from '../blocks/BlockRenderer';
+import { exportBlocksToMarkdown, exportBlocksToLatex } from '../blocks/transpilers';
 import { Document } from '@unlayer/react-elements';
 
 export const LivePreview: React.FC = () => {
@@ -48,10 +49,24 @@ export const LivePreview: React.FC = () => {
 
   const renderedHtml = useMemo(() => {
     try {
-      return renderToHtml(getTemplate());
+      let html = renderToHtml(getTemplate());
+      
+      const fontsToLoad = [];
+      const baseFont = state.theme.typography.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+      const monoFont = state.theme.typography.fontFamilyMono.split(',')[0].replace(/['"]/g, '').trim();
+      
+      if (['Inter', 'Playfair Display', 'Roboto'].includes(baseFont)) fontsToLoad.push(baseFont.replace(/ /g, '+'));
+      if (['Fira Code'].includes(monoFont)) fontsToLoad.push(monoFont.replace(/ /g, '+'));
+      
+      if (fontsToLoad.length > 0) {
+        const familyQuery = fontsToLoad.map(f => `family=${f}:wght@400;500;600;700`).join('&');
+        const fontLink = `<link href="https://fonts.googleapis.com/css2?${familyQuery}&display=swap" rel="stylesheet" />`;
+        html = html.replace('</head>', `${fontLink}</head>`);
+      }
+      return html;
     } catch (e: any) {
       console.error('Render error:', e);
-      return `<html><body style="padding:40px;font-family:sans-serif;color:#ef4444;background:#18181b"><h2>Render Error</h2><pre style="color:#e5e7eb;white-space:pre-wrap">${e?.message || e}</pre></body></html>`;
+      return `<html><body style="padding:40px;font-family:sans-serif;color:#ef4444;background:#FFFFFF"><h2>Render Error</h2><pre style="color:#e5e7eb;white-space:pre-wrap">${e?.message || e}</pre></body></html>`;
     }
   }, [state.blocks, state.sectionStyles, state.theme, state.variables]);
 
@@ -67,6 +82,34 @@ export const LivePreview: React.FC = () => {
             body { padding-bottom: 40px !important; }
             .studio-hoverable { outline: 2px solid #3B82F6 !important; outline-offset: -2px; cursor: default; transition: outline 0.1s; z-index: 9999; position: relative; }
             .studio-selected { outline: 2px solid #10B981 !important; outline-offset: -2px; z-index: 9999; position: relative; }
+            
+            @media print {
+              @page { size: auto; margin: 0; }
+              html, body { 
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+                background-color: #FFFFFF !important;
+                height: auto !important;
+              }
+              body { padding: 15mm !important; }
+              /* Force Unlayer's wrapping structural tables to be white instead of their default grey email canvas */
+              body > table, body > div, .u-row-container {
+                background-color: #FFFFFF !important;
+              }
+              .studio-hoverable, .studio-selected { outline: none !important; }
+              div[data-block-id] { page-break-inside: avoid; break-inside: avoid; margin-bottom: 16px; }
+              table { page-break-inside: auto; width: 100% !important; }
+              tr { page-break-inside: avoid; page-break-after: auto; }
+              td, th { page-break-inside: avoid; }
+              thead { display: table-header-group; }
+              tfoot { display: table-footer-group; }
+              
+              /* Ensure the layout fits the page width */
+              table[role="presentation"], div { max-width: 100% !important; }
+              img { max-width: 100% !important; height: auto !important; }
+            }
           </style>
           <script>
             (function() {
@@ -123,8 +166,19 @@ export const LivePreview: React.FC = () => {
         dispatch({ type: 'BLOCK_SET_FIELD_FOCUS', payload: { blockId: e.data.blockId, fieldKey: null } });
       }
     };
+    
+    const handlePdfExport = () => {
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.print();
+      }
+    };
+
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener('EXPORT_TO_PDF', handlePdfExport);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('EXPORT_TO_PDF', handlePdfExport);
+    };
   }, [dispatch]);
 
   const activeArtifact = state.artifacts?.find(a => a.id === state.activeArtifactId) || state.artifacts?.[0];
@@ -170,7 +224,7 @@ export const LivePreview: React.FC = () => {
             ref={iframeRef}
             style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: activeViewport.height }}
             title={`${state.activeTemplate} preview`}
-            sandbox="allow-same-origin allow-popups allow-scripts"
+            sandbox="allow-same-origin allow-popups allow-scripts allow-modals"
           />
         </div>
       ) : (
@@ -178,9 +232,10 @@ export const LivePreview: React.FC = () => {
           width: '100%',
           maxWidth: '1200px',
           margin: '0 auto',
-          backgroundColor: '#1E1E1E',
-          color: '#D4D4D4',
+          backgroundColor: '#FFFFFF',
+          color: '#3C3830',
           borderRadius: '8px',
+          border: '1px solid #E6E4DD',
           fontFamily: '"Fira Code", "Consolas", monospace',
           fontSize: '13px',
           position: 'relative',
@@ -191,15 +246,22 @@ export const LivePreview: React.FC = () => {
           height: '100%',
           overflow: 'hidden'
         }}>
-          <div style={{ padding: '8px 16px', backgroundColor: '#2D2D2D', borderBottom: '1px solid #404040', fontSize: '12px', fontWeight: 600, color: '#A3A3A3', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ padding: '8px 16px', backgroundColor: '#FAFAED', borderBottom: '1px solid #E6E4DD', fontSize: '12px', fontWeight: 600, color: '#787569', display: 'flex', justifyContent: 'space-between' }}>
             <span>{state.exportTab === 'html' ? 'compiled-output.html' : state.exportTab === 'json' ? 'document-ast.json' : 'output.txt'}</span>
-            <span style={{ cursor: 'pointer' }} onClick={() => navigator.clipboard.writeText(state.exportTab === 'html' ? renderedHtml : JSON.stringify(state.documentData, null, 2))}>Copy</span>
+            <span style={{ cursor: 'pointer' }} onClick={() => {
+              let textToCopy = '';
+              if (state.exportTab === 'html') textToCopy = renderedHtml;
+              else if (state.exportTab === 'json') textToCopy = JSON.stringify(state.documentData, null, 2);
+              else if (state.exportTab === 'markdown') textToCopy = exportBlocksToMarkdown(state.blocks || []);
+              else if (state.exportTab === 'latex') textToCopy = exportBlocksToLatex(state.blocks || []);
+              navigator.clipboard.writeText(textToCopy);
+            }}>Copy</span>
           </div>
           <div style={{ padding: '24px', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }}>
             {state.exportTab === 'html' && renderedHtml}
             {state.exportTab === 'json' && JSON.stringify(state.documentData, null, 2)}
-            {state.exportTab === 'markdown' && '# Markdown Output\n\n// Markdown transpiler output will go here'}
-            {state.exportTab === 'latex' && '% LaTeX Output\n\\documentclass{article}\n\\begin{document}\n\n% LaTeX transpiler output will go here\n\n\\end{document}'}
+            {state.exportTab === 'markdown' && exportBlocksToMarkdown(state.blocks || [])}
+            {state.exportTab === 'latex' && exportBlocksToLatex(state.blocks || [])}
           </div>
         </div>
       )}

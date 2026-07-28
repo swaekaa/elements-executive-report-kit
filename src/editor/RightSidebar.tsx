@@ -365,7 +365,12 @@ export const RightSidebar: React.FC = () => {
               <DynamicInspector />
             )}
             {/* Style Tab */}
-            {activeTab === 'style' && (
+            {activeTab === 'style' && (() => {
+              const focusedBlock = state.blocks?.find(b => b.id === state.focusedBlockId);
+              const defaultBgColor = focusedBlock?.type === 'core/hero' ? '#0a0a0a' : '#ffffff';
+              const defaultTextColor = focusedBlock?.type === 'core/hero' ? '#ffffff' : '#3C3830';
+
+              return (
               <div>
                 <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#9A9486', marginBottom: '12px', letterSpacing: '0.05em' }}>Colors & Appearance</div>
                 
@@ -374,7 +379,7 @@ export const RightSidebar: React.FC = () => {
                     <label style={{ fontSize: '12px', color: '#787569' }}>Background</label>
                     <input 
                       type="color" 
-                      value={selectedStyles.backgroundColor || '#ffffff'} 
+                      value={selectedStyles.backgroundColor || defaultBgColor} 
                       onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
                       style={{ border: '1px solid #E6E4DD', borderRadius: '4px', cursor: 'pointer', width: '28px', height: '28px', padding: 0, backgroundColor: '#FFFFFF' }}
                     />
@@ -384,7 +389,7 @@ export const RightSidebar: React.FC = () => {
                     <label style={{ fontSize: '12px', color: '#787569' }}>Text Color</label>
                     <input 
                       type="color" 
-                      value={selectedStyles.color || '#3C3830'} 
+                      value={selectedStyles.color || defaultTextColor} 
                       onChange={(e) => handleStyleChange('color', e.target.value)}
                       style={{ border: '1px solid #E6E4DD', borderRadius: '4px', cursor: 'pointer', width: '28px', height: '28px', padding: 0, backgroundColor: '#FFFFFF' }}
                     />
@@ -406,7 +411,8 @@ export const RightSidebar: React.FC = () => {
                   </div>
                 </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* Layout Tab */}
             {activeTab === 'layout' && (
