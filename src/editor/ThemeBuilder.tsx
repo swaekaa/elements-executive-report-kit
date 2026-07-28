@@ -16,21 +16,6 @@ export const ThemeBuilder: React.FC = () => {
     });
   };
 
-  const handleFontChange = (key: string, value: string) => {
-    dispatch({
-      type: 'UPDATE_THEME',
-      payload: {
-        typography: {
-          ...state.theme.typography,
-          fontFamily: {
-            ...state.theme.typography.fontFamily,
-            [key]: value
-          }
-        }
-      }
-    });
-  };
-
   return (
     <div style={{
       width: '280px',
@@ -116,7 +101,7 @@ export const ThemeBuilder: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <label style={{ fontSize: '12px', color: '#374151' }}>Base Font</label>
               <select 
-                value={state.theme.typography.fontFamily.split(',')[0].replace(/['"]/g, '')}
+                value={state.theme?.typography?.fontFamily?.split(',')[0].replace(/['"]/g, '') || 'Inter'}
                 onChange={(e) => dispatch({
                   type: 'UPDATE_THEME',
                   payload: {
@@ -139,7 +124,7 @@ export const ThemeBuilder: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <label style={{ fontSize: '12px', color: '#374151' }}>Monospace Font</label>
               <select 
-                value={state.theme.typography.fontFamilyMono.split(',')[0].replace(/['"]/g, '')}
+                value={state.theme?.typography?.fontFamilyMono?.split(',')[0].replace(/['"]/g, '') || 'Fira Code'}
                 onChange={(e) => dispatch({
                   type: 'UPDATE_THEME',
                   payload: {

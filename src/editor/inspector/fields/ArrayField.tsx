@@ -21,7 +21,6 @@ import { TextField, TextAreaField, SelectField } from '../fields';
 import type { BlockFieldSchema } from '../../../blocks/types';
 
 interface ArrayFieldProps {
-  label: string;
   items: any[];
   schema: BlockFieldSchema[];
   onChange: (items: any[]) => void;
@@ -84,7 +83,7 @@ const SortableItem = ({ id, index, item, schema, onChange, onRemove }: any) => {
   );
 };
 
-export const ArrayField: React.FC<ArrayFieldProps> = ({ label, items, schema, onChange }) => {
+export const ArrayField: React.FC<ArrayFieldProps> = ({ items, schema, onChange }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })

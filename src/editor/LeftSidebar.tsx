@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { 
   ChevronRight, ChevronDown, Folder, FileText, Mail, Monitor, Smartphone,
-  Layers, Image as ImageIcon, Palette, Database, LayoutTemplate, Type,
+  Layers, LayoutTemplate, Type,
   EyeOff, Lock, Trash2, Copy, ArrowUp, ArrowDown, Eye, Plus
 } from 'lucide-react';
 import * as Icons from 'lucide-react';
-import type { TemplateId, ViewportMode, RenderMode } from '../types/studio';
+import type { TemplateId } from '../types/studio';
 import { blocksRegistry } from '../blocks/registry';
 import type { Block } from '../blocks/types';
 
@@ -321,9 +321,7 @@ export const LeftSidebar: React.FC = () => {
     { id: 'compliance', label: 'Compliance Report', icon: <Icons.FileCheck size={14} /> }
   ];
 
-  const themes = ['Corporate', 'Executive', 'Minimal', 'Dark', 'Academic'];
-  const dataPresets = ['SaaS', 'AI Startup', 'Healthcare', 'Bank', 'Government'];
-  const layers = ['Header', 'Cover', 'Summary', 'Metrics', 'Timeline', 'Tables', 'Charts', 'Recommendations', 'Appendix', 'Footer'];
+
 
   const getArtifactIcon = (renderMode: string, viewport: string) => {
     if (renderMode === 'email') return <Mail size={14} />;

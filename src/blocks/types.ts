@@ -12,7 +12,8 @@ export type BlockFieldType =
   | 'image' 
   | 'array' 
   | 'json'
-  | 'variable';
+  | 'variable'
+  | 'table_data';
 
 export interface BlockFieldSchema {
   key: string;

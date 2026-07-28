@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDocumentState } from '../hooks/useDocumentState';
 import { DynamicInspector } from './inspector/DynamicInspector';
-import { Settings, Paintbrush, LayoutTemplate, Type, Database, Eye, Code, Trash2 } from 'lucide-react';
+import { Settings, Paintbrush, LayoutTemplate, Trash2 } from 'lucide-react';
 
 type InspectorTab = 'content' | 'style' | 'layout' | 'typography' | 'data' | 'accessibility' | 'advanced';
 

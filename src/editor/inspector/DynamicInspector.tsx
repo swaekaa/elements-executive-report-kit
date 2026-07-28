@@ -95,7 +95,6 @@ export const DynamicInspector: React.FC = () => {
                 case 'array':
                   FieldComponent = (
                     <ArrayField 
-                      label={field.label}
                       items={value || []}
                       schema={field.arrayFields || []}
                       onChange={(items) => handleUpdate(field.key, items)}

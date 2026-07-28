@@ -22,10 +22,7 @@ export const CommandPalette: React.FC = () => {
     { id: 't-sec', label: 'Open: Security Audit', category: 'Templates', action: () => dispatch({ type: 'SET_TEMPLATE', payload: 'security' }) },
     { id: 't-inc', label: 'Open: Incident Report', category: 'Templates', action: () => dispatch({ type: 'SET_TEMPLATE', payload: 'incident' }) },
     
-    // Viewports
-    { id: 'v-desktop', label: 'Viewport: Desktop', category: 'Viewports', action: () => dispatch({ type: 'SET_VIEWPORT', payload: 'desktop' }) },
-    { id: 'v-mobile', label: 'Viewport: Mobile', category: 'Viewports', action: () => dispatch({ type: 'SET_VIEWPORT', payload: 'phone' }) },
-    
+
     // Artifacts / Export
     { id: 'e-html', label: 'Export: HTML', category: 'Export', action: () => dispatch({ type: 'SET_EXPORT_TAB', payload: 'html' }) },
     { id: 'e-json', label: 'Export: JSON', category: 'Export', action: () => dispatch({ type: 'SET_EXPORT_TAB', payload: 'json' }) },
@@ -71,7 +68,7 @@ export const CommandPalette: React.FC = () => {
       setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
     } else if (e.key === 'Enter' && filtered.length > 0) {
       e.preventDefault();
-      filtered[selectedIndex].action();
+      filtered[selectedIndex]?.action();
       setIsOpen(false);
     }
   };
