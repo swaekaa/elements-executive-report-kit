@@ -91,8 +91,8 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ block, theme, sect
 
   // We wrap every block in a span/div with data-block-id so the interactive preview can target it
   return (
-    <span data-block-id={block.id} style={{ display: 'block', position: 'relative' }}>
+    <div data-block-id={block.id} style={{ display: 'block', position: 'relative', ...(sectionStyles[block.id] || {}) }}>
       {renderContent()}
-    </span>
+    </div>
   );
 };

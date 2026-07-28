@@ -21,7 +21,7 @@ export const DynamicInspector: React.FC = () => {
 
   if (!focusedBlock) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center', color: '#71717a', fontSize: '13px' }}>
+      <div style={{ padding: '20px', textAlign: 'center', color: '#9A9486', fontSize: '13px' }}>
         Select a block to edit its properties
       </div>
     );
@@ -57,9 +57,9 @@ export const DynamicInspector: React.FC = () => {
 
   return (
     <div style={{ padding: '16px' }}>
-      <div style={{ marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid #27272a' }}>
-        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#f3f4f6' }}>{def.name}</h3>
-        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#a1a1aa' }}>{def.description}</p>
+      <div style={{ marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid #E6E4DD' }}>
+        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#3C3830' }}>{def.name}</h3>
+        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#787569' }}>{def.description}</p>
       </div>
 
       {Object.entries(groupedSchema).map(([groupName, fields]) => (
@@ -68,7 +68,7 @@ export const DynamicInspector: React.FC = () => {
             fontSize: '11px', 
             textTransform: 'uppercase', 
             letterSpacing: '0.05em', 
-            color: '#a1a1aa', 
+            color: '#787569', 
             margin: '0 0 12px 0' 
           }}>
             {groupName}
@@ -111,7 +111,7 @@ export const DynamicInspector: React.FC = () => {
 
               return (
                 <div key={field.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '12px', color: '#d4d4d8', fontWeight: 500 }}>
+                  <label style={{ fontSize: '12px', color: '#57534E', fontWeight: 500 }}>
                     {field.label}
                   </label>
                   {FieldComponent}

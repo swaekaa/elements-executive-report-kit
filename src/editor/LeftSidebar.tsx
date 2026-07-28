@@ -25,17 +25,17 @@ const CollapsibleSection: React.FC<{ title: string; icon: React.ReactNode; defau
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          color: '#e5e7eb',
+          color: '#3C3830',
           fontSize: '11px',
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}
       >
-        <span style={{ color: '#71717a', display: 'flex', alignItems: 'center' }}>
+        <span style={{ color: '#9A9486', display: 'flex', alignItems: 'center' }}>
           {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#71717a' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9A9486' }}>
           {icon}
         </span>
         {title}
@@ -63,18 +63,18 @@ const TreeItem: React.FC<{
       alignItems: 'center',
       gap: '8px',
       padding: '6px 12px',
-      background: active ? '#27272a' : 'transparent',
+      background: active ? '#E7E5E4' : 'transparent',
       border: 'none',
-      borderLeft: `2px solid ${active ? '#3B82F6' : 'transparent'}`,
+      borderLeft: `2px solid ${active ? '#D97706' : 'transparent'}`,
       cursor: 'pointer',
-      color: active ? '#f3f4f6' : '#a1a1aa',
+      color: active ? '#3C3830' : '#787569',
       fontSize: '13px',
       textAlign: 'left',
       borderRadius: '0 4px 4px 0',
       transition: 'all 0.15s ease'
     }}
   >
-    {icon && <span style={{ color: active ? '#3B82F6' : '#71717a' }}>{icon}</span>}
+    {icon && <span style={{ color: active ? '#D97706' : '#9A9486' }}>{icon}</span>}
     {label}
   </button>
 );
@@ -103,9 +103,9 @@ const BlockTreeItem: React.FC<{
           gap: '6px',
           padding: `6px 16px 6px ${16 + level * 12}px`,
           cursor: 'pointer',
-          color: isActive ? '#FFFFFF' : '#a1a1aa',
-          background: isActive ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
-          borderLeft: isActive ? '2px solid #3B82F6' : '2px solid transparent',
+          color: isActive ? '#D97706' : '#787569',
+          background: isActive ? 'rgba(217, 119, 6, 0.1)' : 'transparent',
+          borderLeft: isActive ? '2px solid #D97706' : '2px solid transparent',
           fontSize: '13px',
           transition: 'all 0.15s ease',
           userSelect: 'none',
@@ -114,15 +114,15 @@ const BlockTreeItem: React.FC<{
         onMouseEnter={e => {
           setIsHovered(true);
           if (!isActive) {
-            e.currentTarget.style.background = '#18181b';
-            e.currentTarget.style.color = '#e5e7eb';
+            e.currentTarget.style.background = '#F0EFE9';
+            e.currentTarget.style.color = '#3C3830';
           }
         }}
         onMouseLeave={e => {
           setIsHovered(false);
           if (!isActive) {
             e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = '#a1a1aa';
+            e.currentTarget.style.color = '#787569';
           }
         }}
       >
@@ -136,12 +136,12 @@ const BlockTreeItem: React.FC<{
           }}
         >
           {hasChildren ? (
-            isExpanded ? <ChevronDown size={14} color={isActive ? '#FFFFFF' : '#71717a'} /> : <ChevronRight size={14} color={isActive ? '#FFFFFF' : '#71717a'} />
+            isExpanded ? <ChevronDown size={14} color={isActive ? '#D97706' : '#9A9486'} /> : <ChevronRight size={14} color={isActive ? '#D97706' : '#9A9486'} />
           ) : (
             <div style={{ width: '14px' }} />
           )}
         </div>
-        <IconComponent size={14} color={isActive ? '#3B82F6' : '#71717a'} />
+        <IconComponent size={14} color={isActive ? '#D97706' : '#9A9486'} />
         <span style={{ 
           whiteSpace: 'nowrap', 
           overflow: 'hidden', 
@@ -156,28 +156,28 @@ const BlockTreeItem: React.FC<{
         <div style={{ display: (isHovered || isActive) ? 'flex' : 'none', alignItems: 'center', gap: '4px' }}>
           <button 
             onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_MOVE', payload: { id: block.id, direction: -1 } }); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#787569' }}
             title="Move Up"
           >
             <ArrowUp size={12} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_MOVE', payload: { id: block.id, direction: 1 } }); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#787569' }}
             title="Move Down"
           >
             <ArrowDown size={12} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_DUPLICATE', payload: { id: block.id } }); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#787569' }}
             title="Duplicate"
           >
             <Copy size={12} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); dispatch({ type: 'BLOCK_UPDATE', payload: { id: block.id, changes: { hidden: !block.hidden } } }); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#a1a1aa' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#787569' }}
             title={block.hidden ? "Show" : "Hide"}
           >
             {block.hidden ? <Eye size={12} /> : <EyeOff size={12} />}
@@ -191,8 +191,8 @@ const BlockTreeItem: React.FC<{
           </button>
         </div>
 
-        {(!isHovered && !isActive) && block.locked && <Lock size={12} color="#71717a" />}
-        {(!isHovered && !isActive) && block.hidden && <EyeOff size={12} color="#71717a" />}
+        {(!isHovered && !isActive) && block.locked && <Lock size={12} color="#9A9486" />}
+        {(!isHovered && !isActive) && block.hidden && <EyeOff size={12} color="#9A9486" />}
       </div>
       
       {isExpanded && hasChildren && (
@@ -227,12 +227,12 @@ const InsertBlockMenu: React.FC<{ dispatch: any; parentId: string | null; level:
         style={{
           width: '100%',
           display: 'flex', alignItems: 'center', gap: '6px',
-          padding: '6px', background: 'transparent', border: '1px dashed #3f3f46',
-          borderRadius: '4px', color: '#a1a1aa', fontSize: '11px', cursor: 'pointer',
+          padding: '6px', background: 'transparent', border: '1px dashed #D6D3D1',
+          borderRadius: '4px', color: '#787569', fontSize: '11px', cursor: 'pointer',
           transition: 'all 0.15s ease'
         }}
-        onMouseOver={e => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.color = '#3B82F6'; }}
-        onMouseOut={e => { e.currentTarget.style.borderColor = '#3f3f46'; e.currentTarget.style.color = '#a1a1aa'; }}
+        onMouseOver={e => { e.currentTarget.style.borderColor = '#D97706'; e.currentTarget.style.color = '#D97706'; }}
+        onMouseOut={e => { e.currentTarget.style.borderColor = '#D6D3D1'; e.currentTarget.style.color = '#787569'; }}
       >
         <Plus size={12} /> Add Block
       </button>
@@ -240,8 +240,8 @@ const InsertBlockMenu: React.FC<{ dispatch: any; parentId: string | null; level:
       {isOpen && (
         <div style={{
           position: 'absolute', top: '100%', left: '16px', right: '16px', zIndex: 50,
-          background: '#18181b', border: '1px solid #27272a', borderRadius: '6px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)', padding: '8px', marginTop: '4px'
+          background: '#FAFAED', border: '1px solid #E6E4DD', borderRadius: '6px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '8px', marginTop: '4px'
         }}>
           <input 
             autoFocus
@@ -250,8 +250,8 @@ const InsertBlockMenu: React.FC<{ dispatch: any; parentId: string | null; level:
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
-              width: '100%', padding: '6px', background: '#0f0f0f', border: '1px solid #27272a',
-              borderRadius: '4px', color: '#e5e7eb', fontSize: '11px', marginBottom: '8px', outline: 'none'
+              width: '100%', padding: '6px', background: '#FFFFFF', border: '1px solid #E6E4DD',
+              borderRadius: '4px', color: '#3C3830', fontSize: '11px', marginBottom: '8px', outline: 'none'
             }}
           />
           <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -261,16 +261,16 @@ const InsertBlockMenu: React.FC<{ dispatch: any; parentId: string | null; level:
                 onClick={() => handleAdd(b.type)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px',
-                  background: 'transparent', border: 'none', color: '#e5e7eb', fontSize: '11px',
+                  background: 'transparent', border: 'none', color: '#3C3830', fontSize: '11px',
                   cursor: 'pointer', textAlign: 'left', borderRadius: '4px'
                 }}
-                onMouseOver={e => e.currentTarget.style.background = '#27272a'}
+                onMouseOver={e => e.currentTarget.style.background = '#F0EFE9'}
                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}
               >
-                {(b.icon && (Icons as any)[b.icon]) ? React.createElement((Icons as any)[b.icon], { size: 14, color: '#a1a1aa' }) : <LayoutTemplate size={14} color="#a1a1aa" />}
+                {(b.icon && (Icons as any)[b.icon]) ? React.createElement((Icons as any)[b.icon], { size: 14, color: '#9A9486' }) : <LayoutTemplate size={14} color="#9A9486" />}
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontWeight: 500 }}>{b.name}</span>
-                  <span style={{ fontSize: '9px', color: '#71717a' }}>{b.category}</span>
+                  <span style={{ fontSize: '9px', color: '#9A9486' }}>{b.category}</span>
                 </div>
               </button>
             ))}
@@ -311,14 +311,14 @@ export const LeftSidebar: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [state.focusedBlockId, dispatch]);
 
-  const templates: { id: TemplateId; label: string }[] = [
-    { id: 'executive', label: 'Executive Report' },
-    { id: 'research', label: 'Research Report' },
-    { id: 'security', label: 'Security Audit' },
-    { id: 'incident', label: 'Incident Report' },
-    { id: 'business', label: 'Business Review' },
-    { id: 'investor', label: 'Investor Update' },
-    { id: 'compliance', label: 'Compliance Report' }
+  const templates: { id: TemplateId; label: string; icon: React.ReactNode }[] = [
+    { id: 'executive', label: 'Executive Report', icon: <Icons.Briefcase size={14} /> },
+    { id: 'research', label: 'Research Report', icon: <Icons.Microscope size={14} /> },
+    { id: 'security', label: 'Security Audit', icon: <Icons.ShieldCheck size={14} /> },
+    { id: 'incident', label: 'Incident Report', icon: <Icons.AlertTriangle size={14} /> },
+    { id: 'business', label: 'Business Review', icon: <Icons.TrendingUp size={14} /> },
+    { id: 'investor', label: 'Investor Update', icon: <Icons.Building size={14} /> },
+    { id: 'compliance', label: 'Compliance Report', icon: <Icons.FileCheck size={14} /> }
   ];
 
   const themes = ['Corporate', 'Executive', 'Minimal', 'Dark', 'Academic'];
@@ -340,16 +340,16 @@ export const LeftSidebar: React.FC = () => {
   return (
     <div style={{
       width: '280px',
-      backgroundColor: '#0f0f0f',
-      borderRight: '1px solid #27272a',
+      backgroundColor: '#F5F5F0',
+      borderRight: '1px solid #E6E4DD',
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       userSelect: 'none',
       overflowY: 'auto'
     }}>
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid #27272a', fontWeight: 600, fontSize: '13px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <Folder size={16} color="#3B82F6" />
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #E6E4DD', fontWeight: 600, fontSize: '13px', color: '#3C3830', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Folder size={16} color="#D97706" />
         {state.projectMetadata?.name || 'Project Explorer'}
       </div>
 
@@ -371,6 +371,7 @@ export const LeftSidebar: React.FC = () => {
             <TreeItem 
               key={t.id} 
               label={t.label} 
+              icon={t.icon}
               active={state.activeTemplate === t.id}
               onClick={() => dispatch({ type: 'SET_TEMPLATE', payload: t.id })}
             />

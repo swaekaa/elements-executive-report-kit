@@ -33,13 +33,13 @@ const ActivityBar: React.FC = () => {
           justifyContent: 'center',
           background: 'transparent',
           border: 'none',
-          borderLeft: isActive ? '2px solid #FFFFFF' : '2px solid transparent',
-          color: isActive ? '#FFFFFF' : '#858585',
+          borderLeft: isActive ? '2px solid #D97706' : '2px solid transparent',
+          color: isActive ? '#D97706' : '#A39C8C',
           cursor: 'pointer',
           transition: 'color 0.2s ease'
         }}
-        onMouseEnter={e => e.currentTarget.style.color = '#FFFFFF'}
-        onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#858585'; }}
+        onMouseEnter={e => e.currentTarget.style.color = '#D97706'}
+        onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#A39C8C'; }}
       >
         {icon}
       </button>
@@ -50,12 +50,12 @@ const ActivityBar: React.FC = () => {
     <div style={{
       width: '48px',
       height: '100%',
-      backgroundColor: '#333333',
+      backgroundColor: '#F0EFE9',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       paddingTop: '8px',
-      borderRight: '1px solid #252526'
+      borderRight: '1px solid #E6E4DD'
     }}>
       <NavItem id="explorer" icon={<Folder size={24} />} title="Project Explorer" />
       <NavItem id="components" icon={<Package size={24} />} title="Component Library" />
@@ -63,8 +63,10 @@ const ActivityBar: React.FC = () => {
       <div style={{ flex: 1 }} />
       <button style={{
         width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'transparent', border: 'none', color: '#858585', cursor: 'pointer'
-      }} title="Settings">
+        background: 'transparent', border: 'none', color: '#A39C8C', cursor: 'pointer'
+      }} title="Settings"
+      onMouseEnter={e => e.currentTarget.style.color = '#D97706'}
+      onMouseLeave={e => e.currentTarget.style.color = '#A39C8C'}>
         <Settings size={24} />
       </button>
     </div>

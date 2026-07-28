@@ -24,31 +24,31 @@ const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label:
   const inputStyles = {
     padding: '8px 12px',
     fontSize: '13px',
-    border: '1px solid #27272a',
+    border: '1px solid #E6E4DD',
     borderRadius: '6px',
     outline: 'none',
-    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.2)',
+    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
     width: '100%',
     boxSizing: 'border-box' as const,
     transition: 'border-color 0.15s ease',
     minHeight: type === 'textarea' ? '120px' : '36px',
     lineHeight: '1.5',
-    backgroundColor: '#111111',
-    color: '#e5e7eb'
+    backgroundColor: '#FFFFFF',
+    color: '#3C3830'
   };
 
   const displayStyles = {
     ...inputStyles,
     cursor: 'text',
-    backgroundColor: '#111111',
+    backgroundColor: '#FFFFFF',
     overflowY: 'auto' as const,
     whiteSpace: type === 'textarea' ? 'pre-wrap' as const : 'nowrap' as const,
     overflowX: type === 'text' ? 'auto' as const : 'hidden' as const,
-    color: '#e5e7eb'
+    color: '#3C3830'
   };
 
   const renderPills = (text: string) => {
-    if (!text) return <span style={{ color: '#71717a' }}>Empty</span>;
+    if (!text) return <span style={{ color: '#9A9486' }}>Empty</span>;
     
     // Split by {{...}}
     const parts = text.split(/(\{\{.*?\}\})/g);
@@ -62,15 +62,15 @@ const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label:
             key={index} 
             style={{ 
               display: 'inline-block',
-              backgroundColor: '#1e3a8a', 
-              color: '#bfdbfe', 
+              backgroundColor: '#FEF3C7', 
+              color: '#D97706', 
               padding: '2px 6px', 
               borderRadius: '4px',
               fontSize: '11px',
               fontWeight: 600,
               margin: '0 2px',
               verticalAlign: 'middle',
-              border: '1px solid #1d4ed8'
+              border: '1px solid #FDE68A'
             }}
           >
             {varLabel}
@@ -84,15 +84,15 @@ const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label:
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <label style={{ fontSize: '11px', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</label>
+        <label style={{ fontSize: '11px', fontWeight: 600, color: '#9A9486', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</label>
         {type !== 'json' && (
           <select 
             onChange={handleVariable}
             style={{
               fontSize: '11px',
-              background: '#27272a',
-              border: 'none',
-              color: '#a1a1aa',
+              background: '#FAFAED',
+              border: '1px solid #E6E4DD',
+              color: '#787569',
               padding: '2px 6px',
               borderRadius: '4px',
               cursor: 'pointer',
@@ -117,9 +117,9 @@ const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label:
             } catch(err) {}
           }} 
           rows={10}
-          style={{ ...inputStyles, fontFamily: 'monospace', fontSize: '12px', resize: 'vertical', backgroundColor: '#111111' }}
-          onFocus={e => e.target.style.borderColor = '#3B82F6'}
-          onBlur={e => e.target.style.borderColor = '#27272a'}
+          style={{ ...inputStyles, fontFamily: 'monospace', fontSize: '12px', resize: 'vertical', backgroundColor: '#FFFFFF' }}
+          onFocus={e => e.target.style.borderColor = '#D97706'}
+          onBlur={e => e.target.style.borderColor = '#E6E4DD'}
         />
       ) : isFocused ? (
         type === 'text' ? (
@@ -127,7 +127,7 @@ const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label:
             type="text" 
             value={value} 
             onChange={handleChange} 
-            style={{ ...inputStyles, borderColor: '#3B82F6' }}
+            style={{ ...inputStyles, borderColor: '#D97706' }}
             autoFocus
             onBlur={() => setIsFocused(false)}
           />
@@ -135,7 +135,7 @@ const PropertyField = ({ label, type = 'text', path, state, dispatch }: { label:
           <textarea 
             value={value} 
             onChange={handleChange} 
-            style={{ ...inputStyles, resize: 'vertical', borderColor: '#3B82F6' }}
+            style={{ ...inputStyles, resize: 'vertical', borderColor: '#D97706' }}
             autoFocus
             onBlur={() => setIsFocused(false)}
           />
@@ -174,26 +174,26 @@ const ArrayBuilder = ({ label, path, fields, state, dispatch }: { label: string,
   const inputStyles = {
     padding: '8px 12px',
     fontSize: '13px',
-    border: '1px solid #27272a',
+    border: '1px solid #E6E4DD',
     borderRadius: '6px',
     outline: 'none',
-    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.2)',
+    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
     width: '100%',
     boxSizing: 'border-box' as const,
     transition: 'border-color 0.15s ease',
-    backgroundColor: '#111111',
-    color: '#e5e7eb'
+    backgroundColor: '#FFFFFF',
+    color: '#3C3830'
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ fontSize: '11px', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+      <div style={{ fontSize: '11px', fontWeight: 600, color: '#9A9486', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {rawArray.map((item: any, index: number) => (
-          <div key={index} style={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '8px', padding: '12px' }}>
+          <div key={index} style={{ backgroundColor: '#FAFAED', border: '1px solid #E6E4DD', borderRadius: '8px', padding: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <span style={{ fontSize: '11px', color: '#71717a', fontWeight: 600 }}>{String(index + 1).padStart(2, '0')}</span>
+              <span style={{ fontSize: '11px', color: '#9A9486', fontWeight: 600 }}>{String(index + 1).padStart(2, '0')}</span>
               <button 
                 onClick={() => handleRemove(index)}
                 style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', cursor: 'pointer', opacity: 0.7 }}
@@ -207,14 +207,14 @@ const ArrayBuilder = ({ label, path, fields, state, dispatch }: { label: string,
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {fields.map(f => (
                 <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</label>
+                  <label style={{ fontSize: '10px', fontWeight: 600, color: '#9A9486', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</label>
                   {f.type === 'textarea' ? (
                     <textarea 
                       value={item[f.key] || ''} 
                       onChange={e => handleUpdate(index, f.key, e.target.value)}
                       style={{ ...inputStyles, minHeight: '80px', resize: 'vertical' }}
-                      onFocus={e => e.target.style.borderColor = '#3B82F6'}
-                      onBlur={e => e.target.style.borderColor = '#27272a'}
+                      onFocus={e => e.target.style.borderColor = '#D97706'}
+                      onBlur={e => e.target.style.borderColor = '#E6E4DD'}
                     />
                   ) : (
                     <input 
@@ -222,8 +222,8 @@ const ArrayBuilder = ({ label, path, fields, state, dispatch }: { label: string,
                       value={item[f.key] || ''} 
                       onChange={e => handleUpdate(index, f.key, e.target.value)}
                       style={{ ...inputStyles, minHeight: '36px' }}
-                      onFocus={e => e.target.style.borderColor = '#3B82F6'}
-                      onBlur={e => e.target.style.borderColor = '#27272a'}
+                      onFocus={e => e.target.style.borderColor = '#D97706'}
+                      onBlur={e => e.target.style.borderColor = '#E6E4DD'}
                     />
                   )}
                 </div>
@@ -239,15 +239,15 @@ const ArrayBuilder = ({ label, path, fields, state, dispatch }: { label: string,
           width: '100%',
           padding: '10px',
           backgroundColor: 'transparent',
-          border: '1px dashed #3f3f46',
+          border: '1px dashed #D6D3D1',
           borderRadius: '8px',
-          color: '#a1a1aa',
+          color: '#787569',
           fontSize: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease'
         }}
-        onMouseOver={e => { e.currentTarget.style.borderColor = '#71717a'; e.currentTarget.style.color = '#e5e7eb'; }}
-        onMouseOut={e => { e.currentTarget.style.borderColor = '#3f3f46'; e.currentTarget.style.color = '#a1a1aa'; }}
+        onMouseOver={e => { e.currentTarget.style.borderColor = '#9A9486'; e.currentTarget.style.color = '#3C3830'; }}
+        onMouseOut={e => { e.currentTarget.style.borderColor = '#D6D3D1'; e.currentTarget.style.color = '#787569'; }}
       >
         + Add item
       </button>
@@ -266,35 +266,35 @@ export const RightSidebar: React.FC = () => {
   ];
 
   const handleStyleChange = (property: string, value: string) => {
-    if (!state.selectedSectionId) return;
+    if (!state.focusedBlockId) return;
     dispatch({
       type: 'UPDATE_SECTION_STYLE',
       payload: {
-        sectionId: state.selectedSectionId,
+        sectionId: state.focusedBlockId,
         styles: { [property]: value }
       }
     });
   };
 
-  const selectedStyles = state.selectedSectionId ? (state.sectionStyles[state.selectedSectionId] || {}) : {};
+  const selectedStyles = state.focusedBlockId ? (state.sectionStyles[state.focusedBlockId] || {}) : {};
 
   return (
     <div style={{
       width: '320px',
       height: '100%',
-      backgroundColor: '#0f0f0f',
-      borderLeft: '1px solid #27272a',
+      backgroundColor: '#F5F5F0',
+      borderLeft: '1px solid #E6E4DD',
       display: 'flex',
       flexDirection: 'column',
-      boxShadow: '-4px 0 15px rgba(0,0,0,0.2)'
+      boxShadow: '-4px 0 15px rgba(0,0,0,0.05)'
     }}>
       {/* Header */}
       <div style={{
         padding: '16px',
-        borderBottom: '1px solid #27272a',
+        borderBottom: '1px solid #E6E4DD',
         fontWeight: 600,
         fontSize: '13px',
-        color: '#e5e7eb',
+        color: '#3C3830',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -302,7 +302,7 @@ export const RightSidebar: React.FC = () => {
         <span>Inspector</span>
         {state.focusedBlockId && (
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span style={{ fontSize: '11px', color: '#a1a1aa', fontWeight: 500, backgroundColor: '#18181b', border: '1px solid #27272a', padding: '2px 6px', borderRadius: '4px', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={state.focusedBlockId}>
+            <span style={{ fontSize: '11px', color: '#787569', fontWeight: 500, backgroundColor: '#FAFAED', border: '1px solid #E6E4DD', padding: '2px 6px', borderRadius: '4px', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={state.focusedBlockId}>
               {state.focusedBlockId.substring(0, 8)}
             </span>
             <button 
@@ -322,7 +322,7 @@ export const RightSidebar: React.FC = () => {
       <div style={{
         display: 'flex',
         overflowX: 'auto',
-        borderBottom: '1px solid #27272a',
+        borderBottom: '1px solid #E6E4DD',
         scrollbarWidth: 'none', // Firefox
         msOverflowStyle: 'none' // IE/Edge
       }}>
@@ -334,8 +334,8 @@ export const RightSidebar: React.FC = () => {
               padding: '10px 12px',
               border: 'none',
               background: 'transparent',
-              borderBottom: `2px solid ${activeTab === tab.id ? '#3B82F6' : 'transparent'}`,
-              color: activeTab === tab.id ? '#3B82F6' : '#a1a1aa',
+              borderBottom: `2px solid ${activeTab === tab.id ? '#D97706' : 'transparent'}`,
+              color: activeTab === tab.id ? '#D97706' : '#787569',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -354,7 +354,7 @@ export const RightSidebar: React.FC = () => {
       {/* Content Area */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
         {!state.focusedBlockId ? (
-          <div style={{ textAlign: 'center', color: '#71717a', fontSize: '13px', marginTop: '40px' }}>
+          <div style={{ textAlign: 'center', color: '#9A9486', fontSize: '13px', marginTop: '40px' }}>
             <Settings size={32} style={{ opacity: 0.5, marginBottom: '12px' }} />
             <p>Select a block to inspect properties.</p>
           </div>
@@ -367,35 +367,35 @@ export const RightSidebar: React.FC = () => {
             {/* Style Tab */}
             {activeTab === 'style' && (
               <div>
-                <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#71717a', marginBottom: '12px', letterSpacing: '0.05em' }}>Colors & Appearance</div>
+                <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#9A9486', marginBottom: '12px', letterSpacing: '0.05em' }}>Colors & Appearance</div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '12px', color: '#a1a1aa' }}>Background</label>
+                    <label style={{ fontSize: '12px', color: '#787569' }}>Background</label>
                     <input 
                       type="color" 
                       value={selectedStyles.backgroundColor || '#ffffff'} 
                       onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-                      style={{ border: '1px solid #27272a', borderRadius: '4px', cursor: 'pointer', width: '28px', height: '28px', padding: 0, backgroundColor: '#18181b' }}
+                      style={{ border: '1px solid #E6E4DD', borderRadius: '4px', cursor: 'pointer', width: '28px', height: '28px', padding: 0, backgroundColor: '#FFFFFF' }}
                     />
                   </div>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '12px', color: '#a1a1aa' }}>Text Color</label>
+                    <label style={{ fontSize: '12px', color: '#787569' }}>Text Color</label>
                     <input 
                       type="color" 
-                      value={selectedStyles.color || '#111827'} 
+                      value={selectedStyles.color || '#3C3830'} 
                       onChange={(e) => handleStyleChange('color', e.target.value)}
-                      style={{ border: '1px solid #27272a', borderRadius: '4px', cursor: 'pointer', width: '28px', height: '28px', padding: 0, backgroundColor: '#18181b' }}
+                      style={{ border: '1px solid #E6E4DD', borderRadius: '4px', cursor: 'pointer', width: '28px', height: '28px', padding: 0, backgroundColor: '#FFFFFF' }}
                     />
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '12px', color: '#a1a1aa' }}>Border Radius</label>
+                    <label style={{ fontSize: '12px', color: '#787569' }}>Border Radius</label>
                     <select 
                       value={selectedStyles.borderRadius || '0px'}
                       onChange={(e) => handleStyleChange('borderRadius', e.target.value)}
-                      style={{ padding: '4px 8px', fontSize: '12px', border: '1px solid #27272a', borderRadius: '4px', backgroundColor: '#18181b', color: '#e5e7eb', outline: 'none' }}
+                      style={{ padding: '4px 8px', fontSize: '12px', border: '1px solid #E6E4DD', borderRadius: '4px', backgroundColor: '#FAFAED', color: '#3C3830', outline: 'none' }}
                     >
                       <option value="0px">None (0px)</option>
                       <option value="4px">Small (4px)</option>
@@ -411,23 +411,23 @@ export const RightSidebar: React.FC = () => {
             {/* Layout Tab */}
             {activeTab === 'layout' && (
               <div>
-                <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#71717a', marginBottom: '12px', letterSpacing: '0.05em' }}>Spacing & Alignment</div>
+                <div style={{ fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', color: '#9A9486', marginBottom: '12px', letterSpacing: '0.05em' }}>Spacing & Alignment</div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: '#a1a1aa', display: 'block', marginBottom: '4px' }}>Padding</label>
+                    <label style={{ fontSize: '12px', color: '#787569', display: 'block', marginBottom: '4px' }}>Padding</label>
                     <input 
                       type="text" 
                       value={selectedStyles.padding || ''} 
                       onChange={(e) => handleStyleChange('padding', e.target.value)}
                       placeholder="e.g. 24px 32px"
-                      style={{ width: '100%', padding: '6px 8px', fontSize: '12px', border: '1px solid #27272a', borderRadius: '4px', backgroundColor: '#111111', color: '#e5e7eb', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '6px 8px', fontSize: '12px', border: '1px solid #E6E4DD', borderRadius: '4px', backgroundColor: '#FFFFFF', color: '#3C3830', boxSizing: 'border-box' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12px', color: '#a1a1aa', display: 'block', marginBottom: '4px' }}>Text Alignment</label>
-                    <div style={{ display: 'flex', gap: '4px', background: '#18181b', padding: '4px', borderRadius: '6px', border: '1px solid #27272a' }}>
+                    <label style={{ fontSize: '12px', color: '#787569', display: 'block', marginBottom: '4px' }}>Text Alignment</label>
+                    <div style={{ display: 'flex', gap: '4px', background: '#FAFAED', padding: '4px', borderRadius: '6px', border: '1px solid #E6E4DD' }}>
                       {['left', 'center', 'right'].map(align => (
                         <button
                           key={align}
@@ -436,13 +436,13 @@ export const RightSidebar: React.FC = () => {
                             flex: 1,
                             padding: '4px',
                             border: 'none',
-                            background: selectedStyles.textAlign === align ? '#27272a' : 'transparent',
-                            boxShadow: selectedStyles.textAlign === align ? '0 1px 2px rgba(0,0,0,0.2)' : 'none',
+                            background: selectedStyles.textAlign === align ? '#E6E4DD' : 'transparent',
+                            boxShadow: selectedStyles.textAlign === align ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
                             borderRadius: '4px',
                             cursor: 'pointer',
                             fontSize: '12px',
                             textTransform: 'capitalize',
-                            color: selectedStyles.textAlign === align ? '#f3f4f6' : '#a1a1aa'
+                            color: selectedStyles.textAlign === align ? '#3C3830' : '#787569'
                           }}
                         >
                           {align}
