@@ -337,7 +337,7 @@ export const LeftSidebar: React.FC = () => {
 
   return (
     <div style={{
-      width: '280px',
+      width: '100%',
       backgroundColor: '#F5F5F0',
       borderRight: '1px solid #E6E4DD',
       display: 'flex',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
 import { LivePreview } from '../preview/LivePreview';
@@ -79,6 +79,86 @@ const ActivityBar: React.FC = () => {
   );
 };
 
+const ResizableSidebar: React.FC<{
+  children: React.ReactNode;
+  defaultWidth: number;
+  minWidth?: number;
+  maxWidth?: number;
+  side: 'left' | 'right';
+}> = ({ children, defaultWidth, minWidth = 200, maxWidth = 600, side }) => {
+  const [width, setWidth] = useState(defaultWidth);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isDragging) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      if (side === 'left') {
+        const newWidth = e.clientX - 48; // ActivityBar is 48px
+        if (newWidth >= minWidth && newWidth <= maxWidth) setWidth(newWidth);
+      } else {
+        const newWidth = window.innerWidth - e.clientX;
+        if (newWidth >= minWidth && newWidth <= maxWidth) setWidth(newWidth);
+      }
+    };
+    
+    const handleMouseUp = () => setIsDragging(false);
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, side, minWidth, maxWidth]);
+
+  return (
+    <div style={{ display: 'flex', width: `${width}px`, flexShrink: 0, position: 'relative' }}>
+      {side === 'right' && (
+        <div 
+          onMouseDown={handleMouseDown}
+          style={{
+            position: 'absolute', left: -3, top: 0, bottom: 0, width: '6px',
+            cursor: 'col-resize', zIndex: 10,
+            backgroundColor: isDragging ? '#D97706' : 'transparent',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDragging ? '#D97706' : '#E6E4DD'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isDragging ? '#D97706' : 'transparent'}
+        />
+      )}
+      
+      <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        {children}
+      </div>
+
+      {side === 'left' && (
+        <div 
+          onMouseDown={handleMouseDown}
+          style={{
+            position: 'absolute', right: -3, top: 0, bottom: 0, width: '6px',
+            cursor: 'col-resize', zIndex: 10,
+            backgroundColor: isDragging ? '#D97706' : 'transparent',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDragging ? '#D97706' : '#E6E4DD'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isDragging ? '#D97706' : 'transparent'}
+        />
+      )}
+    </div>
+  );
+};
+
 export const EditorLayout: React.FC = () => {
   const { state } = useDocumentState();
 
@@ -97,12 +177,18 @@ export const EditorLayout: React.FC = () => {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <ActivityBar />
         {state.leftSidebarOpen && (
-          state.activeLeftPanel === 'explorer' ? <LeftSidebar /> : 
-          state.activeLeftPanel === 'components' ? <ComponentLibrary /> : 
-          <ThemeBuilder />
+          <ResizableSidebar side="left" defaultWidth={280}>
+            {state.activeLeftPanel === 'explorer' ? <LeftSidebar /> : 
+             state.activeLeftPanel === 'components' ? <ComponentLibrary /> : 
+             <ThemeBuilder />}
+          </ResizableSidebar>
         )}
         <LivePreview />
-        {state.rightSidebarOpen && <RightSidebar />}
+        {state.rightSidebarOpen && (
+          <ResizableSidebar side="right" defaultWidth={320}>
+            <RightSidebar />
+          </ResizableSidebar>
+        )}
       </div>
       <StatusBar />
     </div>

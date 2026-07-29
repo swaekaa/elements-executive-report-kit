@@ -83,7 +83,7 @@ export const ComponentLibrary: React.FC = () => {
 
   return (
     <div style={{
-      width: '320px',
+      width: '100%',
       backgroundColor: '#FFFFFF',
       borderLeft: '1px solid #E5E7EB',
       display: 'flex',

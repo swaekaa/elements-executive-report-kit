@@ -30,7 +30,7 @@ export const RightSidebar: React.FC = () => {
 
   return (
     <div style={{
-      width: '320px',
+      width: '100%',
       height: '100%',
       backgroundColor: '#F5F5F0',
       borderLeft: '1px solid #E6E4DD',

@@ -18,7 +18,7 @@ export const ThemeBuilder: React.FC = () => {
 
   return (
     <div style={{
-      width: '280px',
+      width: '100%',
       height: '100%',
       backgroundColor: '#F9FAFB',
       borderRight: '1px solid #E5E7EB',
