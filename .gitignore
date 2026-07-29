@@ -24,6 +24,6 @@ npm-debug.log*
 *.tsbuildinfo
 
 # AI Agent Work Files
-IMPLEMENTATION_PLAN_*.md
-task.md
-walkthrough.md
+IMPLEMENTATION_PLAN*.md
+TASK*.md
+WALKTHROUGH*.md
