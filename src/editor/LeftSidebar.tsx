@@ -113,7 +113,7 @@ const BlockTreeItem: React.FC<{
           } else if (y > rect.height * 0.75) {
             setDropPosition('after');
           } else {
-            setDropPosition(def?.children ? 'inside' : 'after');
+            setDropPosition(block.children !== undefined ? 'inside' : 'after');
           }
         }}
         onDragLeave={() => setDropPosition(null)}
