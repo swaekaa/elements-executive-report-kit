@@ -93,6 +93,8 @@ The application acts as a complete WYSIWYG editor showcasing the power of Elemen
 - **Templates**: Swap the core content layout between 7 distinct report types.
 
 ![Left Sidebar](public/screenshots/leftSidebar.gif)
+<br>
+![Artifact Viewports](public/screenshots/docs.png)
 
 ### 2. The Canvas (Live Preview)
 - Click on any block (Hero, Timeline, Table) in the center iframe to select it. The preview updates in real-time as you type or change colors.
@@ -107,6 +109,13 @@ When a block is selected, the **Dynamic Inspector** appears on the right:
 
 ### 4. Command Palette
 - Press `Ctrl + K` (or `Cmd + K`) to open the global Command Palette for quick access to templates, export formats (HTML, JSON, Markdown, LaTeX), and zoom controls.
+
+![Command Palette](public/screenshots/ctrl-K.gif)
+
+### 5. Export Engine
+- Transpile the React Elements Document AST directly into raw **HTML**, **JSON**, **Markdown**, or **LaTeX** with a single click.
+
+![Export Formats](public/screenshots/formats.png)
 
 ---
 
