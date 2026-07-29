@@ -92,7 +92,7 @@ The application acts as a complete WYSIWYG editor showcasing the power of Elemen
 - **Artifacts**: Switch between different render targets (e.g., Executive Report Document, Email Broadcast, Landing Page). This demonstrates how Elements adapts the same content to different viewports (Desktop, Mobile, A4).
 - **Templates**: Swap the core content layout between 7 distinct report types.
 
-https://github.com/user-attachments/assets/be9bf3bf-c270-42e2-b773-e783ecc27a53
+![Left Sidebar](public/screenshots/leftSidebar.gif)
 
 ### 2. The Canvas (Live Preview)
 - Click on any block (Hero, Timeline, Table) in the center iframe to select it. The preview updates in real-time as you type or change colors.
@@ -103,7 +103,7 @@ When a block is selected, the **Dynamic Inspector** appears on the right:
 - **Variables**: Inject dynamic variables (e.g., `{{COMPANY_NAME}}`) directly into text fields.
 - **Theme Builder**: Click the global "Theme" tab to override brand colors (Primary, Background, Text) and typography (Base Font, Monospace Font). Elements automatically propagates these CSS styles down the tree.
 
-https://github.com/user-attachments/assets/09140c5f-9899-4fcd-83c0-6de2a2e79ef3
+![Right Sidebar](public/screenshots/rightSidebar.gif)
 
 ### 4. Command Palette
 - Press `Ctrl + K` (or `Cmd + K`) to open the global Command Palette for quick access to templates, export formats (HTML, JSON, Markdown, LaTeX), and zoom controls.
@@ -117,37 +117,37 @@ The kit comes with 7 ready-to-use templates. Each template is a composition of s
 ### 1. Executive Report
 Quarterly performance report designed for C-level leadership. Focuses on high-level metrics, strategic summaries, and clean typography.
 
-https://github.com/user-attachments/assets/3103c6be-2c50-402d-a88b-5e7e9e4175ce
+![Executive Report](public/screenshots/execReport.gif)
 
 ### 2. Research Report
 Academic-style report for publishing experiments or whitepapers. Features abstract layouts, multi-column data, and citation blocks.
 
-https://github.com/user-attachments/assets/8e9f398c-fb2b-46e3-bc39-78a58aa47ca2
+![Research Report](public/screenshots/researchReport.gif)
 
 ### 3. Security Audit
 Technical template for vulnerability findings and risk matrices. Includes severity badging and strict tabular layouts.
 
-https://github.com/user-attachments/assets/4f65a4e1-8b00-49ec-9bac-c5a12e2a243f
+![Security Audit](public/screenshots/securityAudit.gif)
 
 ### 4. Incident Report
 Post-mortem template containing timelines, root cause analysis blocks, and impact summaries.
 
-https://github.com/user-attachments/assets/b93365ef-155c-4f7e-bb4a-230a26966a13
+![Incident Report](public/screenshots/incidentReport.gif)
 
 ### 5. Business Review
 Designed for Monthly/Quarterly Business Reviews (MBR/QBR). Heavy emphasis on financial highlights, charts, and operational updates.
 
-https://github.com/user-attachments/assets/1d9a4cec-5206-4151-a8f7-94a5df6ba657
+![Business Review](public/screenshots/businessReview.gif)
 
 ### 6. Investor Update
 Optimized for email broadcasts to stakeholders. Features a CEO message, fundraising milestones, and a clean single-column responsive layout.
 
-https://github.com/user-attachments/assets/017aa557-b066-449a-9c9d-9ed5822748f6
+![Investor Update](public/screenshots/investorUpdates.gif)
 
 ### 7. Compliance Report
 Structured layout for SOC2 / Framework compliance assessments, policy reviews, and audit trails.
 
-https://github.com/user-attachments/assets/819f7fa8-717a-44ab-a30e-dc021f7281a4
+![Compliance Report](public/screenshots/compilenceReport.gif)
 
 ---
 
