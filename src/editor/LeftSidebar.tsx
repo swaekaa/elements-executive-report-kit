@@ -87,6 +87,7 @@ const BlockTreeItem: React.FC<{
 }> = ({ block, level, state, dispatch }) => {
   const [isExpanded, setIsExpanded] = useState(!block.collapsed);
   const [isHovered, setIsHovered] = useState(false);
+  const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
   const def = blocksRegistry.get(block.type);
   const IconComponent = (def?.icon && (Icons as any)[def.icon]) ? (Icons as any)[def.icon] : LayoutTemplate;
   const hasChildren = block.children && block.children.length > 0;
@@ -96,16 +97,46 @@ const BlockTreeItem: React.FC<{
   return (
     <div>
       <div 
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.setData('application/elements-block-id', block.id);
+          e.dataTransfer.effectAllowed = 'move';
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = 'move';
+          const rect = e.currentTarget.getBoundingClientRect();
+          const y = e.clientY - rect.top;
+          if (y < rect.height * 0.25) {
+            setDropPosition('before');
+          } else if (y > rect.height * 0.75) {
+            setDropPosition('after');
+          } else {
+            setDropPosition(def?.children ? 'inside' : 'after');
+          }
+        }}
+        onDragLeave={() => setDropPosition(null)}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const draggedId = e.dataTransfer.getData('application/elements-block-id');
+          if (draggedId && draggedId !== block.id && dropPosition) {
+            dispatch({ type: 'BLOCK_DROP', payload: { draggedId, targetId: block.id, position: dropPosition } });
+          }
+          setDropPosition(null);
+        }}
         onClick={() => dispatch({ type: 'BLOCK_SET_FOCUS', payload: { blockId: block.id } })}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           padding: `6px 16px 6px ${16 + level * 12}px`,
-          cursor: 'pointer',
+          cursor: 'grab',
           color: isActive ? '#D97706' : '#787569',
-          background: isActive ? 'rgba(217, 119, 6, 0.1)' : 'transparent',
+          background: isActive ? 'rgba(217, 119, 6, 0.1)' : dropPosition === 'inside' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
           borderLeft: isActive ? '2px solid #D97706' : '2px solid transparent',
+          boxShadow: dropPosition === 'before' ? 'inset 0 2px 0 #3B82F6' : dropPosition === 'after' ? 'inset 0 -2px 0 #3B82F6' : dropPosition === 'inside' ? 'inset 0 0 0 2px #3B82F6' : 'none',
           fontSize: '13px',
           transition: 'all 0.15s ease',
           userSelect: 'none',

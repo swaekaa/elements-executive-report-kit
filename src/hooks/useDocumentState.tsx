@@ -74,6 +74,7 @@ type Action =
   | { type: 'BLOCK_UPDATE'; payload: { id: string; changes: Partial<Block> } }
   | { type: 'BLOCK_DUPLICATE'; payload: { id: string } }
   | { type: 'BLOCK_MOVE'; payload: { id: string; direction: -1 | 1 } }
+  | { type: 'BLOCK_DROP'; payload: { draggedId: string; targetId: string; position: 'before' | 'after' | 'inside' } }
   | { type: 'BLOCK_SET_FOCUS'; payload: { blockId: string | null } }
   | { type: 'BLOCK_SET_FIELD_FOCUS'; payload: { blockId: string; fieldKey: string | null } }
   
@@ -180,7 +181,7 @@ const isUndoable = (actionType: string) => {
   return [
     'SET_TEMPLATE', 'UPDATE_DATA', 'UPDATE_THEME', 'UPDATE_SECTION_STYLE',
     'ARRAY_ADD', 'ARRAY_REMOVE', 'ARRAY_REORDER', 'ARRAY_DUPLICATE',
-    'BLOCK_ADD', 'BLOCK_REMOVE', 'BLOCK_UPDATE',
+    'BLOCK_ADD', 'BLOCK_REMOVE', 'BLOCK_UPDATE', 'BLOCK_DROP',
     'SET_VARIABLE', 'ADD_ARTIFACT', 'REMOVE_ARTIFACT', 'UPDATE_ARTIFACT'
   ].includes(actionType);
 };
@@ -342,6 +343,58 @@ const projectReducer = (state: ProjectState, action: Action): ProjectState => {
         return blocks.map(b => b.children ? { ...b, children: moveDeep(b.children) } : b);
       };
       return { ...state, blocks: moveDeep(state.blocks) };
+    }
+    case 'BLOCK_DROP': {
+      const { draggedId, targetId, position } = action.payload;
+      if (draggedId === targetId) return state;
+
+      let draggedBlock: any = null;
+      const removeDeep = (blocks: any[]): any[] => {
+        return blocks.filter(b => {
+          if (b.id === draggedId) {
+            draggedBlock = b;
+            return false;
+          }
+          return true;
+        }).map(b => {
+          if (b.children) return { ...b, children: removeDeep(b.children) };
+          return b;
+        });
+      };
+      
+      const treeWithoutDragged = removeDeep(state.blocks);
+      if (!draggedBlock) return state;
+
+      const insertDeep = (blocks: any[]): any[] => {
+        const result: any[] = [];
+        for (const b of blocks) {
+          if (b.id === targetId) {
+            if (position === 'before') {
+              result.push(draggedBlock);
+              result.push(b);
+            } else if (position === 'after') {
+              result.push(b);
+              result.push(draggedBlock);
+            } else if (position === 'inside') {
+              result.push({
+                ...b,
+                children: [...(b.children || []), draggedBlock]
+              });
+            }
+          } else {
+            result.push({
+              ...b,
+              children: b.children ? insertDeep(b.children) : undefined
+            });
+          }
+        }
+        return result;
+      };
+
+      return {
+        ...state,
+        blocks: insertDeep(treeWithoutDragged)
+      };
     }
     case 'BLOCK_UPDATE': {
       const updateBlockDeep = (blocks: any[], id: string, changes: any): any[] => {
