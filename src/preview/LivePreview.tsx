@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { renderToHtml } from '@unlayer/react-elements';
 import { useDocumentState } from '../hooks/useDocumentState';
 
@@ -29,6 +29,7 @@ import { Document } from '@unlayer/react-elements';
 export const LivePreview: React.FC = () => {
   const { state, dispatch } = useDocumentState();
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [copied, setCopied] = useState(false);
 
   const getTemplate = () => {
     // Resolve variables in all blocks (in a real app, this should be a recursive deep resolve on blocks)
@@ -248,14 +249,17 @@ export const LivePreview: React.FC = () => {
         }}>
           <div style={{ padding: '8px 16px', backgroundColor: '#FAFAED', borderBottom: '1px solid #E6E4DD', fontSize: '12px', fontWeight: 600, color: '#787569', display: 'flex', justifyContent: 'space-between' }}>
             <span>{state.exportTab === 'html' ? 'compiled-output.html' : state.exportTab === 'json' ? 'document-ast.json' : 'output.txt'}</span>
-            <span style={{ cursor: 'pointer' }} onClick={() => {
+            <span style={{ cursor: 'pointer', color: copied ? '#10B981' : '#787569', transition: 'color 0.2s' }} onClick={() => {
               let textToCopy = '';
               if (state.exportTab === 'html') textToCopy = renderedHtml;
               else if (state.exportTab === 'json') textToCopy = JSON.stringify(state.documentData, null, 2);
               else if (state.exportTab === 'markdown') textToCopy = exportBlocksToMarkdown(state.blocks || []);
               else if (state.exportTab === 'latex') textToCopy = exportBlocksToLatex(state.blocks || []);
-              navigator.clipboard.writeText(textToCopy);
-            }}>Copy</span>
+              navigator.clipboard.writeText(textToCopy).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              });
+            }}>{copied ? 'Copied!' : 'Copy'}</span>
           </div>
           <div style={{ padding: '24px', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }}>
             {state.exportTab === 'html' && renderedHtml}
