@@ -128,7 +128,7 @@ const ResizableSidebar: React.FC<{
         <div 
           onMouseDown={handleMouseDown}
           style={{
-            position: 'absolute', left: -3, top: 0, bottom: 0, width: '6px',
+            position: 'absolute', left: -2, top: 0, bottom: 0, width: '4px',
             cursor: 'col-resize', zIndex: 10,
             backgroundColor: isDragging ? '#D97706' : 'transparent',
             transition: 'background-color 0.2s'
@@ -146,7 +146,7 @@ const ResizableSidebar: React.FC<{
         <div 
           onMouseDown={handleMouseDown}
           style={{
-            position: 'absolute', right: -3, top: 0, bottom: 0, width: '6px',
+            position: 'absolute', right: -2, top: 0, bottom: 0, width: '4px',
             cursor: 'col-resize', zIndex: 10,
             backgroundColor: isDragging ? '#D97706' : 'transparent',
             transition: 'background-color 0.2s'

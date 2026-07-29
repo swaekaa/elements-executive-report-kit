@@ -75,6 +75,10 @@ export const LivePreview: React.FC = () => {
         // Inject Figma-style interactive script and styles
         const interactiveHtml = renderedHtml.replace('</body>', `
           <style>
+            ::-webkit-scrollbar { width: 6px; height: 6px; }
+            ::-webkit-scrollbar-track { background: transparent; }
+            ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 4px; }
+            ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
             body { padding-bottom: 40px !important; }
             .studio-hoverable { outline: 2px solid #3B82F6 !important; outline-offset: -2px; cursor: default; transition: outline 0.1s; z-index: 9999; position: relative; }
             .studio-selected { outline: 2px solid #10B981 !important; outline-offset: -2px; z-index: 9999; position: relative; }
